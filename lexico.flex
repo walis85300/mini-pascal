@@ -25,11 +25,11 @@ import java_cup.runtime.*;
 /******************************************************************
 BORRAR SI NO SE NECESITA
 	//TODO: Cambiar la SF por esto o ver que se hace
-	//Crear un nuevo objeto java_cup.runtime.Symbol con información sobre el token actual sin valor
+	//Crear un nuevo objeto java_cup.runtime.Symbol con informaciï¿½n sobre el token actual sin valor
  	  private Symbol symbol(int type){
     		return new Symbol(type,yyline,yycolumn);
 	  }
-	//Crear un nuevo objeto java_cup.runtime.Symbol con información sobre el token actual con valor
+	//Crear un nuevo objeto java_cup.runtime.Symbol con informaciï¿½n sobre el token actual con valor
 	  private Symbol symbol(int type,Object value){
     		return new Symbol(type,yyline,yycolumn,value);
 	  }
@@ -58,6 +58,12 @@ espacio		= [ \t]+
 "if"            {	if(debug) System.out.println("token IF");
 			return sf.newSymbol("IF",sym.IF);
 			}
+"Var"		{		if(debug) System.out.println("token VAR");
+			return sf.newSymbol("VAR", sym.VAR);				
+			}
+"Program"	{	if(debug) System.out.println("token PROGRAM");
+			return sf.newSymbol("PROGRAM", sym.PROGRAM);			
+			}			
 "then"          { if(debug) System.out.println("token THEN");
 			return sf.newSymbol("THEN",sym.THEN);
 			}
@@ -85,6 +91,18 @@ espacio		= [ \t]+
 "write"         {	if(debug) System.out.println("token WRITE");
 			return sf.newSymbol("WRITE",sym.WRITE);
 			}
+"Integer" 	{ if (debug) System.out.println("token INTEGER");
+			return sf.newSymbol("INTEGER", sym.INTEGER);
+			}
+"Boolean"	{ if (debug) System.out.println("token BOOLEAN");
+			return sf.newSymbol("BOOLEAN", sym.BOOLEAN);
+			}		
+"Array" 	{ if (debug) System.out.println("token ARRAY");
+			return sf.newSymbol("ARRAY", sym.ARRAY);
+			}
+"of"		{ if (debug) System.out.println("token OF");
+			return sf.newSymbol("OF", sym.OF);
+			}		
 ":="            {	if(debug) System.out.println("token ASSIGN");
 			return sf.newSymbol("ASSIGN",sym.ASSIGN);
 			}
@@ -130,8 +148,23 @@ espacio		= [ \t]+
 ")"             {	if(debug) System.out.println("token RPAREN");
 			return sf.newSymbol("RPAREN",sym.RPAREN);
 			}
+"["			{ if (debug) System.out.println("token LB");
+			return sf.newSymbol("LB", sym.LB);
+			}
+"]"			{ if (debug) System.out.println("token RB");
+			return sf.newSymbol("RB", sym.RB);
+			}			
 ";"             {	if(debug) System.out.println("token SEMI");
 			return sf.newSymbol("SEMI",sym.SEMI);
+			}
+":"			{ if (debug) System.out.println("token COL");
+			return sf.newSymbol("COL", sym.COL);
+			}
+","			{ if (debug) System.out.println("token COMMA");
+			return sf.newSymbol("COMMA", sym.COMMA);
+			}
+"." 		{ if (debug) System.out.println("token DOT");
+			return sf.newSymbol("DOT", sym.DOT);
 			}
 {numero}        {	if(debug) System.out.println("token NUM");
 			return sf.newSymbol("NUM",sym.NUM,new String(yytext()));

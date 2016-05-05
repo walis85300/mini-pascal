@@ -1,0 +1,5 @@
+Program hola;
+Var
+	j,i: Integer;
+	j,i: Boolean;
+	k: Array [1..2] of Integer;

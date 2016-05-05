@@ -7,8 +7,8 @@ import ast.*;
 parser code {:
 
 /***********
-SymbolFactory es una nueva caracteristica que ha sido añadida a las version 11a de cup, la cual facilita la implementacion de clases Symbol personalizadas
-, esto debido a que dicha clase no provee mucha información de contexto que podria ser util para el analisis semantico o ayudar en la construccion del AST
+SymbolFactory es una nueva caracteristica que ha sido aï¿½adida a las version 11a de cup, la cual facilita la implementacion de clases Symbol personalizadas
+, esto debido a que dicha clase no provee mucha informaciï¿½n de contexto que podria ser util para el analisis semantico o ayudar en la construccion del AST
 Mas informacion en: http//4thmouse.com/index.php/2007/02/15/using-custom-symbols-in-cup/
 ***********/
 	public static void main(String args[]) throws Exception {
@@ -78,6 +78,17 @@ terminal GT;
 terminal GQ;
 terminal NQ;
 terminal FOR;
+terminal VAR;
+terminal PROGRAM;
+terminal COL;
+terminal INTEGER;
+terminal BOOLEAN;
+terminal ARRAY;
+terminal OF;
+terminal DOT;
+terminal COMMA;
+terminal LB;
+terminal RB;
 
 /* Simbolos No Terminales */
 non terminal program;
@@ -94,7 +105,17 @@ non terminal NodoBase exp;
 non terminal NodoBase simple_exp;
 non terminal NodoBase term;
 non terminal NodoBase factor;
-non terminal  begin;
+non terminal begin;
+/* Nuestros no terminales */
+non terminal programa;
+non terminal cuerpo;
+non terminal var_dec_p;
+non terminal var_dec;
+non terminal dec;
+non terminal type;
+non terminal simp_type;
+non terminal arr_type;
+non terminal ind_range; 
 
 /* Precedencia de operadores */
 precedence left PLUS;
@@ -104,134 +125,64 @@ precedence left TIMES;
 
 /* REGLAS GRAMATICALES */
 
-program     ::= stmt_seq:s	{: if(debug) System.out.println("\t regla 1"); 
-					ast = s;
-					:}
-		;
+program ::= PROGRAM ID SEMI cuerpo {: 
 
-stmt_seq    ::= stmt_seq:ini SEMI stmt:sent	{: if(debug) System.out.println("\t regla 2a"); 
-						
-						:}
-            | stmt:sent	{: if(debug) System.out.println("\t regla 2b"); 
-								
+					if(debug) System.out.println("\t regla 1");
+			
 				:}
-		;
+			;
+			
+cuerpo ::= var_dec_p {:	
+	if(debug) System.out.println("\t declaracion de variables");		
+	:}
+	;
+	
+var_dec_p ::= VAR var_dec {: if (debug) System.out.println("\t regla 3.1"); :}
+			| var_dec_p  var_dec   {: if (debug) System.out.println("\t regla 3.2"); :}
+			| var_dec  {: if (debug) System.out.println("\t regla 3,3");:} 
+			;
+			
+var_dec	 ::= var_dec COMMA dec {:
+				if (debug) System.out.println("\t regla 4.2");
+			:}
+			|
+			dec {:
+				if (debug) System.out.println("\t regla 4.1"); 
+			:}
+			;
+			
+dec 	::= dec COL type SEMI {:
+				if (debug) System.out.println("\t regla 5.2");
+			:}
+			| 
+			ID:nombre {:
+				if (debug) System.out.println("\t nombre de variable: "+nombre);		 
+			:}
+			;
 
-stmt        ::= if_stmt:sif	{: if(debug) System.out.println("\t regla 3a"); 
-					
-					:}
-            | repeat_stmt:srep	{: if(debug) System.out.println("\t regla 3b"); 
-						
-						:}
-		    | while_stmt:wrep	{: if(debug) System.out.println("\t regla 3f"); 
-						:}
-		    | do_while_stmt:dwrep	{: if(debug) System.out.println("\t regla 3g"); 
-						:}
-            | assign_stmt:sasi	{: if(debug) System.out.println("\t regla 3c"); 
-						:}
-            | read_stmt:slec	{: if(debug) System.out.println("\t regla 3d"); 
-					:}
-            | write_stmt:sesc	{: if(debug) System.out.println("\t regla 3e"); 
-					:}
-			|begin {: if(debug) System.out.println("\t regla 3g"); :}
-            | error	{: if(debug) System.out.println("\t regla 3f"); 
-				System.out.println("Ocurrio error en cup # 0004");
+type	::= simp_type {:
+				if (debug) System.out.println("\t regla 6.1");				
+			:} 
+			| arr_type {:
+				if (debug) System.out.println("\t regla 6.2");
+			:}
+			;
+			
+
+arr_type ::= ARRAY LB ind_range RB OF simp_type	{:
+				if (debug) System.out.println("\t regla 7");
+			:} 
+			;
+
+simp_type ::= INTEGER {:
+					if (debug) System.out.println("type Integer");
+				:} 
+				| BOOLEAN {:
+					if (debug) System.out.println("type Boolean");
+				:} 
+				;
+
+ind_range ::= NUM:ni DOT DOT NUM:nd {:
+					if (debug) System.out.println("Array entre"+ni+" "+nd);
 				:}
-            ;
-
-if_stmt     ::= IF exp:ex THEN stmt_seq:pthen END	{: if(debug) System.out.println("\t regla 4a"); 
-		:}
-		| IF exp:ex THEN stmt_seq:pthen ELSE stmt_seq:pelse END	{: if(debug) System.out.println("\t regla 4b"); 
-		:}
-		;
-
-repeat_stmt ::= REPEAT stmt_seq:cuerpo UNTIL exp:prueba	{: if(debug) System.out.println("\t regla 5"); 
-							:}
-		;
-		
-while_stmt ::= WHILE exp:prueba DO stmt_seq:cuerpo END	{: if(debug) System.out.println("\t regla 5w"); 
-							:}
-		;		
-
-do_while_stmt ::= DO stmt_seq:cuerpo WHILE exp:prueba END	{: if(debug) System.out.println("\t regla 5w"); 
-							:}
-		;		
-		
-
-assign_stmt ::= ID:variable 	{: if(debug) System.out.println("\t regla 6 parte del medio"); 
-				/*lineanum=1000; //Pasar/Obtener la linea correcta por el Simbolo
-				String nombre = variable.getName();*/
-				:}
-			ASSIGN exp:ex	{: if(debug) System.out.println("\t regla 6 parte final");
-					if(variable!=null)
-					RESULT = new NodoAsignacion(variable.toString(),ex);
-					else{
-					System.out.println("Ocurrio error en cup # 0001");
-					}
-					:}
-		;
-
-read_stmt   ::= READ ID:variable	{: if(debug) System.out.println("\t regla 7"); 
-					System.out.println("Leyendo Variable");
-					if(variable!=null){}
-					else{
-					System.out.println("Ocurrio error en cup # 0002");
-					}
-					:}
-		;
-
-write_stmt  ::= WRITE exp:ex	{: if(debug) System.out.println("\t regla 8"); 
-					:}
-		;
-
-exp         ::= simple_exp:exI LT simple_exp:exD	{: if(debug) System.out.println("\t regla 9a"); 
-								:} 
-		| simple_exp:exI EQ simple_exp:exD	{: if(debug) System.out.println("\t regla 9b"); 
-							:}
-		| simple_exp:ex	{: if(debug) System.out.println("\t regla 9c"); 
-					:}
-		;
-
-simple_exp  ::= simple_exp:exI PLUS term:exD	{: if(debug) System.out.println("\t regla 10a"); 
-							:}
-		| simple_exp:exI MINUS term:exD	{: if(debug) System.out.println("\t regla 10b"); 
-							:}
-		| term:ex	{: if(debug) System.out.println("\t regla 10c"); 
-				:}
-		;
-
-term        ::= term:exI TIMES factor:exD	{: if(debug) System.out.println("\t regla 11a"); 
-							:}
-		| term:exI OVER factor:exD	{: if(debug) System.out.println("\t regla 11b"); 
-						:}
-		| factor:ex	{: if(debug) System.out.println("\t regla 11c"); 
-					:}
-		;
-		
-begin ::= BEGIN:bg {:
-				 if (debug) System.out.println("\t regla begin"); 
-
-				:}
-				
-		;
-		
-factor      ::= LPAREN exp:ex RPAREN	{: if(debug) System.out.println("\t regla 12a"); 
-							:}
-		| NUM:valor	{: if(debug) System.out.println("\t regla 12b"); 
-					System.out.println("Devolvi nodo numero entero");
-					if(valor!=null){
-					}else{
-						System.out.println("Ocurrio error en cup # 0005");
-					}
-					:}
-		| ID:variable	{: if(debug) System.out.println("\t regla 12c"); 
-					if(variable!=null){
-						System.out.println("Construyendo Nodo ID para Lexema: "+ variable.toString());
-					}else{
-						System.out.println("Ocurrio error en cup # 0005");
-					}
-					:}
-		| error	{: if(debug) System.out.println("\t regla 12d"); 
-				System.out.println("Ocurrio error en cup # 0003");
-				:}
-		;
+				;			
