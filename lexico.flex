@@ -100,6 +100,9 @@ espacio		= [ \t]+
 "Array" 	{ if (debug) System.out.println("token ARRAY");
 			return sf.newSymbol("ARRAY", sym.ARRAY);
 			}
+"function" { if (debug) System.out.println("token FUNCTION");
+			return sf.newSymbol("FUNCTION", sym.FUNCTION);
+			}			
 "of"		{ if (debug) System.out.println("token OF");
 			return sf.newSymbol("OF", sym.OF);
 			}		

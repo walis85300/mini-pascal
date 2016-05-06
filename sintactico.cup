@@ -89,6 +89,7 @@ terminal DOT;
 terminal COMMA;
 terminal LB;
 terminal RB;
+terminal FUNCTION;
 
 /* Simbolos No Terminales */
 non terminal program;
@@ -116,6 +117,10 @@ non terminal type;
 non terminal simp_type;
 non terminal arr_type;
 non terminal ind_range; 
+non terminal func_dec_p;
+non terminal argumentos;
+non terminal stm;
+non terminal lista_declaraciones;
 
 /* Precedencia de operadores */
 precedence left PLUS;
@@ -132,16 +137,41 @@ program ::= PROGRAM ID SEMI cuerpo {:
 				:}
 			;
 			
-cuerpo ::= var_dec_p {:	
+cuerpo ::= var_dec_p func_dec_p  {:	
 	if(debug) System.out.println("\t declaracion de variables");		
 	:}
 	;
 	
-var_dec_p ::= VAR var_dec {: if (debug) System.out.println("\t regla 3.1"); :}
-			| var_dec_p  var_dec   {: if (debug) System.out.println("\t regla 3.2"); :}
-			| var_dec  {: if (debug) System.out.println("\t regla 3,3");:} 
+var_dec_p ::= VAR var_dec_p SEMI  {: if (debug) System.out.println("\t regla 3.1"); :}
+			| var_dec_p SEMI  var_dec   {: if (debug) System.out.println("\t regla 3.2"); :}
+			| var_dec   {: if (debug) System.out.println("\t regla 3,3");:} 
 			;
-			
+						
+func_dec_p ::= FUNCTION simp_type ID:nf argumentos stm {:
+				 if (debug) System.out.println("\t Declaracion de la funcion"+nf);
+				 :}
+				 ;		
+				 
+argumentos ::= LPAREN var_dec RPAREN {:
+				if (debug) System.out.println("\t regla 8 Argumentos");
+				:}
+				|
+				;		
+				
+stm ::= BEGIN lista_declaraciones END SEMI {:
+					System.out.println("\t lista de declaraciones");
+				:}	
+				;				
+				
+lista_declaraciones ::= declaraciones SEMI {:
+					if (debug) System.out.println("\t Regla 1 declaraciones");
+				:} 
+				|
+				lista_declaraciones declaraciones {:
+					if (debug) System.out.println("\t Regla 2 declaraciones");
+				:}	
+				; 
+
 var_dec	 ::= var_dec COMMA dec {:
 				if (debug) System.out.println("\t regla 4.2");
 			:}
@@ -151,14 +181,15 @@ var_dec	 ::= var_dec COMMA dec {:
 			:}
 			;
 			
-dec 	::= dec COL type SEMI {:
+dec 	::= dec COL type  {:
 				if (debug) System.out.println("\t regla 5.2");
 			:}
 			| 
 			ID:nombre {:
 				if (debug) System.out.println("\t nombre de variable: "+nombre);		 
 			:}
-			;
+			;				
+								
 
 type	::= simp_type {:
 				if (debug) System.out.println("\t regla 6.1");				
@@ -186,3 +217,4 @@ ind_range ::= NUM:ni DOT DOT NUM:nd {:
 					if (debug) System.out.println("Array entre"+ni+" "+nd);
 				:}
 				;			
+				
