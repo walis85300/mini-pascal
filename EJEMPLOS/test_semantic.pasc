@@ -1,0 +1,6 @@
+Program test;
+begin
+	if (true) then
+		write(0);
+	end;	
+end;
