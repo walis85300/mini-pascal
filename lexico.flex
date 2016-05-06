@@ -105,7 +105,13 @@ espacio		= [ \t]+
 			}			
 "of"		{ if (debug) System.out.println("token OF");
 			return sf.newSymbol("OF", sym.OF);
-			}		
+			}
+"to"		{ if (debug) System.out.println("token TO");
+			return sf.newSymbol("TO", sym.TO);
+			}	
+"do"		{ if (debug) System.out.println("token DO");
+			return sf.newSymbol("DO", sym.DO);
+			}			
 ":="            {	if(debug) System.out.println("token ASSIGN");
 			return sf.newSymbol("ASSIGN",sym.ASSIGN);
 			}
