@@ -128,6 +128,7 @@ non terminal NodoBase func_p;
 non terminal NodoBase exp_and;
 non terminal NodoBase exp_logica;
 non terminal NodoBase lista;
+non terminal NodoBase proc_p;
 
 /* Precedencia de operadores */
 precedence left PLUS;
@@ -143,26 +144,26 @@ program ::= PROGRAM ID:nombre SEMI cuerpo:bdy
 			{: 
 				if(debug) System.out.println("\t regla 1");
 				
-				// RESULT = new NodoPrograma(nombre.toString(), bdy);
+				 ast = new NodoProgram(nombre, bdy);
 				
-				ast = bdy;
 				
 				System.out.println(ast);
 			:}
 			;
 			
-cuerpo ::= var_p func_p stm:stm  
+cuerpo ::= var_p:vars func_p:funs proc_p:procs stm:stm  
 		{:	
 			if(debug) System.out.println("\t declaracion de variables");
-			// RESULT = new NodoCuerpo(var_p, func_p, stm);
+			 RESULT = new NodoMain(vars, funs, procs, stm);
 			
-			RESULT = stm;		
 		:}
 		;
 		
+proc_p ::= {:RESULT = null; :} ;
+		
 	
 var_p ::= VAR var_dec_p
-			|
+			| {:RESULT = null; :}
 			;	
 			
 var_dec_p ::= var_dec_p SEMI  
@@ -180,7 +181,7 @@ var_dec_p ::= var_dec_p SEMI
 			;
 			
 func_p ::= FUNCTION func_dec_p func_p
-			|
+			| {:RESULT = null; :}
 			;			
 						
 func_dec_p ::=  simp_type ID:nf argumentos stm 
@@ -307,6 +308,7 @@ declaraciones   ::= if_stmt:sif
 		   		| while_stmt:wrep	
 		   		{: 
 		   			if(debug) System.out.println("\t regla 3f"); 
+		   			RESULT = wrep;
 				:}
 				| for_stmt 
 				{: 
@@ -338,9 +340,11 @@ if_stmt     ::= IF exp:ex THEN lista:pthen END SEMI
 					RESULT = new NodoIf(ex, pthen);
 				:}
 				| 
-				IF exp:ex THEN lista:pthen ELSE lista:pelse
+				IF exp:ex THEN lista:pthen ELSE lista:pelse END SEMI
 				{:
 			 		if(debug) System.out.println("\t regla 4b"); 
+			 		
+			 		RESULT = new NodoIf(ex, pthen, pelse);
 				:}
 				;
 
@@ -353,6 +357,8 @@ repeat_stmt ::= REPEAT lista:cuerpo UNTIL exp:prueba
 while_stmt ::= WHILE exp:prueba DO lista:cuerpo	
 			{: 
 				if(debug) System.out.println("\t regla 5w"); 
+				
+				RESULT = new NodoWhile(prueba, cuerpo);
 			:}
 			;		
 
