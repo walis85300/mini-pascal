@@ -3,7 +3,7 @@ Program hola;
 function Integer dolares(tasasimadi: Boolean)
 	begin
 		read bolivares;
-		if ( <> tasasimadi) or ( t <> 2) then
+		if ( <> tasasimadi) then
 			salida := bolivares / 300;
 		end;
 		
@@ -16,6 +16,22 @@ function Integer dolares(tasasimadi: Boolean)
 				write(4);
 			end;
 	end;
+function Integer dolares(tasasimadi: Boolean)
+	begin
+		read bolivares;
+		if  ( t <> 2) then
+			salida := bolivares / 300;
+		end;
+		
+		for variable := 0 to 20 do
+			begin 
+				write(pupu);
+			end;
+		while (a=0) or (b<3) do
+			begin
+				write(4);
+			end;
+	end;	
 begin
 	dolar := 800;
 	t := dolares();
