@@ -1,6 +1,7 @@
 Program test;
 begin
 	write(0);
+	x := x + 2;
 	if (a=0) then
 		begin
 			write(a);
