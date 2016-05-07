@@ -59,7 +59,7 @@ terminal UNTIL;
 terminal READ;
 terminal WRITE;
 terminal String ID;
-terminal String NUM;
+terminal Integer NUM;
 terminal ASSIGN;
 terminal EQ;
 terminal LT;
@@ -143,7 +143,7 @@ program ::= PROGRAM ID:nombre SEMI cuerpo:bdy
 			{: 
 				if(debug) System.out.println("\t regla 1");
 				
-				// RESULT = new NodoPrograma(nombre.toString(), bdy);
+				RESULT = new NodoProgram(nombre.toString(), bdy);
 				
 				ast = bdy;
 				
@@ -151,12 +151,10 @@ program ::= PROGRAM ID:nombre SEMI cuerpo:bdy
 			:}
 			;
 			
-cuerpo ::= var_p func_p stm:stm  
+cuerpo ::= var_p:variables func_p:funciones stm:cuerpo  
 		{:	
 			if(debug) System.out.println("\t declaracion de variables");
-			// RESULT = new NodoCuerpo(var_p, func_p, stm);
-			
-			RESULT = stm;		
+			RESULT = new NodoMain(varibles,funciones,null,cuerpo);	
 		:}
 		;
 		
@@ -303,6 +301,7 @@ declaraciones   ::= if_stmt:sif
             	| repeat_stmt:srep	
             	{: 
             		if(debug) System.out.println("\t regla 3b"); 
+            		RESULT = srep;
 				:}
 		   		| while_stmt:wrep	
 		   		{: 
@@ -314,7 +313,8 @@ declaraciones   ::= if_stmt:sif
 				:}
             	| assign_stmt:sasi SEMI	
             	{: 
-            		if(debug) System.out.println("\t regla 3c"); 
+            		if(debug) System.out.println("\t regla 3c");
+            		RESULT = sasi; 
 				:}
             	| read_stmt:slec SEMI	
             	{: 
@@ -347,6 +347,8 @@ if_stmt     ::= IF exp:ex THEN lista:pthen END SEMI
 repeat_stmt ::= REPEAT lista:cuerpo UNTIL exp:prueba	
 			{: 
 				if(debug) System.out.println("\t regla 5"); 
+				
+				RESULT = new NodoRepeat(cuerpo,prueba);
 			:}
 			;
 		
@@ -371,6 +373,12 @@ assign_stmt ::= ID:variable
 			ASSIGN exp:ex	
 			{: 
 				if(debug) System.out.println("\t regla 6 parte final");
+				if(variable!=null)
+					RESULT = new NodoAsignacion(variable.toString(),ex);
+				else{
+					RESULT = null;
+					System.out.println("Ocurrio error en cup # 0001");
+					}
 			:}
 			;
 
@@ -459,7 +467,8 @@ args_stmt ::= exp COMMA args_stmt
 
 simple_exp  ::= simple_exp:exI PLUS term:exD	
 				{: 
-					if(debug) System.out.println("\t regla 10a"); 
+					if(debug) System.out.println("\t regla 10a");
+					RESULT = new NodoOperacion(exI,tipoOp.mas,exD); 
 				:}
 		| simple_exp:exI MINUS term:exD	
 				{: 
