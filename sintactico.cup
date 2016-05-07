@@ -122,219 +122,388 @@ non terminal argumentos;
 non terminal stm;
 non terminal lista_declaraciones;
 non terminal for_stmt;
-non terminal oplog;
 non terminal args_stmt;
+non terminal var_p;
+non terminal func_p;
+non terminal exp_and;
+non terminal exp_logica;
+non terminal main;
+non terminal lista;
 
 /* Precedencia de operadores */
 precedence left PLUS;
 precedence left MINUS;
 precedence left TIMES;
+precedence left AND;
+precedence left OR;
 
 
 /* REGLAS GRAMATICALES */
 
-program ::= PROGRAM ID SEMI cuerpo  {: 
-
-					if(debug) System.out.println("\t regla 1");
-			
-				:}
+program ::= PROGRAM ID SEMI cuerpo:bdy  
+			{: 
+				if(debug) System.out.println("\t regla 1");
+				
+				//ast = bdy;
+			:}
 			;
 			
-cuerpo ::= var_dec_p func_dec_p stm  {:	
-	if(debug) System.out.println("\t declaracion de variables");		
-	:}
-	;
+cuerpo ::= var_p func_p stm:stm  
+		{:	
+			if(debug) System.out.println("\t declaracion de variables");
+			
+			//RESULT = stm;		
+		:}
+		;
+		
 	
-var_dec_p ::= VAR var_dec_p SEMI  {: if (debug) System.out.println("\t declara variable regla 3.1"); :}
-			| var_dec_p SEMI  var_dec   {: if (debug) System.out.println("\t declara variable  regla 3.2"); :}
-			| var_dec   {: if (debug) System.out.println("\t declara variable regla 3,3");:} 
+var_p ::= VAR var_dec_p
+			|
+			;	
+			
+var_dec_p ::= var_dec_p SEMI  
+			{: 
+				if (debug) System.out.println("\t declara variable regla 3.1"); 
+			:}
+			| var_dec_p SEMI  var_dec   
+			{: 
+				if (debug) System.out.println("\t declara variable  regla 3.2"); 
+			:}
+			| var_dec   
+			{: 
+				if (debug) System.out.println("\t declara variable regla 3,3");
+			:} 
 			;
+			
+func_p ::= FUNCTION func_dec_p
+			|
+			;			
 						
-func_dec_p ::= FUNCTION simp_type ID:nf argumentos stm {:
-				 if (debug) System.out.println("\t Declaracion de la funcion"+nf);
-				 :}
-				 ;		
+func_dec_p ::=  simp_type ID:nf argumentos stm 
+				{:
+				 	if (debug) System.out.println("\t Declaracion de la funcion"+nf);
+				:}
+				;		
 				 
-argumentos ::= LPAREN var_dec RPAREN {:
-				if (debug) System.out.println("\t regla 8 Argumentos");
+argumentos ::= LPAREN var_dec RPAREN 
+				{:
+					if (debug) System.out.println("\t regla 8 Argumentos");
 				:}
 				| LPAREN RPAREN {:
 					if (debug) System.out.println("\t funcion sin parametros");
 					:}			
-				;		
+				;
 				
-stm ::= BEGIN lista_declaraciones END SEMI {:
+lista ::= declaraciones | stm;		
+				
+stm ::= BEGIN lista_declaraciones:ldec END SEMI 
+				{:
 					System.out.println("\t lista de declaraciones");
-				:}	
+					//RESULT = ldec;
+				:}
 				;				
 				
-lista_declaraciones ::= declaraciones  {:
+lista_declaraciones ::= declaraciones:dec
+				{:
 					if (debug) System.out.println("\t Regla 1 declaraciones");
+					
+					//RESULT = dec;
 				:} 
 				|
-				lista_declaraciones declaraciones {:
+				 declaraciones lista_declaraciones
+				{:
 					if (debug) System.out.println("\t Regla 2 declaraciones");
 				:}	
 				; 
-
 				
 
-var_dec	 ::= var_dec COMMA dec {:
+var_dec	 ::= var_dec COMMA dec 
+			{:
 				if (debug) System.out.println("\t regla 4.2");
 			:}
 			|
-			dec {:
+			dec 
+			{:
 				if (debug) System.out.println("\t regla 4.1"); 
 			:}			
 			;
 			
-dec 	::= dec COL type  {:
+dec 	::= dec COL type  
+			{:
 				if (debug) System.out.println("\t regla 5.2");
 			:}
 			| 
-			ID:nombre {:
-				if (debug) System.out.println("\t nombre de variable: "+nombre);		 
+			factor:fact 
+			{:
+				//if (debug) System.out.println("\t nombre de variable: "+fact);		 
 			:}
 			;				
 								
 
-type	::= simp_type {:
+type	::= simp_type 
+			{:
 				if (debug) System.out.println("\t regla 6.1");				
 			:} 
-			| arr_type {:
+			| arr_type 
+			{:
 				if (debug) System.out.println("\t regla 6.2");
 			:}
 			;
 			
 
-arr_type ::= ARRAY LB ind_range RB OF simp_type	{:
+arr_type ::= ARRAY LB ind_range RB OF simp_type	
+			{:
 				if (debug) System.out.println("\t regla 7");
 			:} 
 			;
 
-simp_type ::= INTEGER {:
+simp_type ::= INTEGER 
+				{:
 					if (debug) System.out.println("type Integer");
 				:} 
-				| BOOLEAN {:
+				| BOOLEAN 
+				{:
 					if (debug) System.out.println("type Boolean");
 				:} 
 				;
 
-ind_range ::= NUM:ni DOT DOT NUM:nd {:
+ind_range ::= NUM:ni DOT DOT NUM:nd 
+				{:
 					if (debug) System.out.println("Array entre"+ni+" "+nd);
 				:}
 				;		
-declaraciones        ::= if_stmt:sif	{: if(debug) System.out.println("\t regla 3a"); 
-					:}
-            | repeat_stmt:srep	{: if(debug) System.out.println("\t regla 3b"); 
-						:}
-		    | while_stmt:wrep	{: if(debug) System.out.println("\t regla 3f"); 
-						:}
-			| for_stmt {: if (debug) System.out.println("\t regla del for"); :}
-            | assign_stmt:sasi SEMI	{: if(debug) System.out.println("\t regla 3c"); 
-						:}
-            | read_stmt:slec SEMI	{: if(debug) System.out.println("\t regla 3d"); 
-					:}
-            | write_stmt:sesc SEMI	{: if(debug) System.out.println("\t regla 3e"); 
-					:}
-            | error	{: if(debug) System.out.println("\t regla 3f"); 
+declaraciones   ::= if_stmt:sif	
+				{: 
+					if(debug) System.out.println("\t regla 3a"); 
+					//RESULT = sif;
+				:}
+            	| repeat_stmt:srep	
+            	{: 
+            		if(debug) System.out.println("\t regla 3b"); 
+				:}
+		   		| while_stmt:wrep	
+		   		{: 
+		   			if(debug) System.out.println("\t regla 3f"); 
+				:}
+				| for_stmt 
+				{: 
+					if (debug) System.out.println("\t regla del for"); 
+				:}
+            	| assign_stmt:sasi SEMI	
+            	{: 
+            		if(debug) System.out.println("\t regla 3c"); 
+				:}
+            	| read_stmt:slec SEMI	
+            	{: 
+            		if(debug) System.out.println("\t regla 3d"); 
+				:}
+            	| write_stmt:sesc SEMI	
+            	{:
+            		if(debug) System.out.println("\t regla 3e"); 
+            		//RESULT = sesc;
+				:}
+            	| error	{: if(debug) System.out.println("\t regla 3f"); 
 				System.out.println("Ocurrio error en cup # 0004");
 				:}
             ;
 
-if_stmt     ::= IF exp:ex THEN stm:pthen END SEMI	{: if(debug) System.out.println("\t regla 4a"); 
-		:}
-		| IF exp:ex THEN declaraciones:pthen ELSE declaraciones:pelse END SEMI	{: if(debug) System.out.println("\t regla 4b"); 
-		:}
-		;
 
-repeat_stmt ::= REPEAT lista_declaraciones:cuerpo UNTIL exp:prueba	{: if(debug) System.out.println("\t regla 5"); 
-							:}
-		;
+if_stmt     ::= IF exp:ex THEN lista:pthen SEMI
+				{: 
+					if(debug) System.out.println("\t regla 4a"); 
+					
+					//RESULT = new NodoIf(ex, pthen);
+				:}
+				| 
+				IF exp:ex THEN lista:pthen ELSE lista:pelse
+				{:
+			 		if(debug) System.out.println("\t regla 4b"); 
+				:}
+				;
+
+repeat_stmt ::= REPEAT lista_declaraciones:cuerpo UNTIL exp:prueba	
+			{: 
+				if(debug) System.out.println("\t regla 5"); 
+			:}
+			;
 		
-while_stmt ::= WHILE exp:prueba DO stm:cuerpo	{: if(debug) System.out.println("\t regla 5w"); 
-							:}
-		;		
+while_stmt ::= WHILE exp:prueba DO stm:cuerpo	
+			{: 
+				if(debug) System.out.println("\t regla 5w"); 
+			:}
+			;		
 
 
-for_stmt ::= FOR assign_stmt TO NUM DO stm {:
+for_stmt ::= FOR assign_stmt TO exp DO stm 
+			{:
 				if (debug) System.out.println("\t declaracion del for");
 			:}
 			;		
 
-assign_stmt ::= ID:variable 	{: if(debug) System.out.println("\t regla 6 parte del medio"); 
-				/*lineanum=1000; //Pasar/Obtener la linea correcta por el Simbolo
-				String nombre = variable.getName();*/
-				:}
-			ASSIGN exp:ex	{: if(debug) System.out.println("\t regla 6 parte final");
-					
-					:}
-		;
+assign_stmt ::= ID:variable 	
+			{: 
+				if(debug) System.out.println("\t regla 6 parte del medio"); 
+				//String nombre = variable.getName();
+			:}
+			ASSIGN exp:ex	
+			{: 
+				if(debug) System.out.println("\t regla 6 parte final");
+			:}
+			;
 
-read_stmt   ::= READ ID:variable	{: if(debug) System.out.println("\t regla 7"); 
-					System.out.println("Leyendo Variable");
-					:}
-		;
+read_stmt   ::= READ LPAREN ID RPAREN:variable	 
+			{: if(debug) System.out.println("\t regla 7"); 
+				System.out.println("Leyendo Variable");
+			:}
+			;
 
-write_stmt  ::= WRITE exp:ex	{: if(debug) System.out.println("\t regla 8"); 
-					:}
+write_stmt  ::= WRITE term:ex	
+			{: 
+				if(debug) System.out.println("\t regla 8");
+				
+				//RESULT = new NodoEscribir(ex); 
+			:}
 		;
+		
+exp ::= exp OR exp_and:ex 
+			{:
+				if (debug) System.out.println("\t regla 9a con or"); 
+			:}
+		| 
+		exp_and:ex 
+			{: 
+				if (debug) System.out.println("\t regla 9a sin or");
+				
+			//	RESULT = ex; 
+			:}
+		;
+		
+exp_and ::= exp_and AND	exp_logica {: if (debug) System.out.println("\t regla 9b con and"); :}
+		|
+		exp_logica:ex
+			{: 
+				if (debug) System.out.println("\t regla 9b sin and");
+				
+				//RESULT = ex;
+			:}
+		;				
 
-exp         ::= simple_exp:exI LT simple_exp:exD	{: if(debug) System.out.println("\t regla 9a"); 
+exp_logica ::= simple_exp:exI LT simple_exp:exD	{: if(debug) System.out.println("\t regla 9a"); 
 								:} 
-		| simple_exp LQ simple_exp {: if (debug) System.out.println("\t regla 9d"); :}
-		| simple_exp GT simple_exp {: if (debug) System.out.println("\t regla 9e");	:}
-		| simple_exp GQ simple_exp {: if (debug) System.out.println("\t regla 9f"); :}	
-		| simple_exp NQ simple_exp {: if (debug) System.out.println("\t regla 9h"); :}					
-		| simple_exp:exI EQ simple_exp:exD	{: if(debug) System.out.println("\t regla 9b"); 
-							:}
-		| simple_exp:ex	{: if(debug) System.out.println("\t regla 9c"); 
-					:}
-		| exp oplog factor {: if (debug) System.out.println("\t regla 9g"); :}	
+		| simple_exp LQ simple_exp 
+			{: 
+				if (debug) System.out.println("\t regla 9d"); 
+			:}
+		| simple_exp GT simple_exp 
+			{: 
+				if (debug) System.out.println("\t regla 9e");	
+			:}
+		| simple_exp GQ simple_exp 
+			{: 
+				if (debug) System.out.println("\t regla 9f"); 
+			:}	
+		| simple_exp NQ simple_exp 
+			{: 
+				if (debug) System.out.println("\t regla 9h"); 
+			:}					
+		| simple_exp:exI EQ simple_exp:exD	
+			{: 
+				if(debug) System.out.println("\t regla 9b"); 
+			:}
+		| NQ simple_exp 
+			{: 
+				if (debug) System.out.println("\t regla 9i"); 
+			:}
+		| simple_exp:ex	
+			{: 
+				if(debug) System.out.println("\t regla 9c");
+				//RESULT = ex; 
+			:}
 		;
-
-oplog ::= OR {: if (debug) System.out.println("\t operador or"); :}
-		 |
-		 AND {: if (debug) System.out.println("\t operador and"); :}
-		 ;
 		 
-args_stmt ::= exp COMMA args_stmt {:
+args_stmt ::= exp COMMA args_stmt 
+			{:
 				if (debug) System.out.println("\t argumentos");
 			:}
 			|
-			exp {:
+			exp 
+			{:
 				if (debug) System.out.println("\t argumento");
 			:}
 			;
 
 
-simple_exp  ::= simple_exp:exI PLUS term:exD	{: if(debug) System.out.println("\t regla 10a"); 
-							:}
-		| simple_exp:exI MINUS term:exD	{: if(debug) System.out.println("\t regla 10b"); 
-							:}
-		| term:ex	{: if(debug) System.out.println("\t regla 10c"); 
-				RESULT=ex;
+simple_exp  ::= simple_exp:exI PLUS term:exD	
+				{: 
+					if(debug) System.out.println("\t regla 10a"); 
+				:}
+		| simple_exp:exI MINUS term:exD	
+				{: 
+					if(debug) System.out.println("\t regla 10b"); 
+				:}
+		| term:ex	
+				{: 
+					if(debug) System.out.println("\t regla 10c"); 
+					//RESULT=ex;
 				:}
 		;
 
-term        ::= term:exI TIMES factor:exD	{: if(debug) System.out.println("\t regla 11a"); 
-							:}
-		| term:exI OVER factor:exD	{: if(debug) System.out.println("\t regla 11b"); 
-						:}
-		| factor:ex	{: if(debug) System.out.println("\t regla 11c"); 
-					:}
+term        ::= term:exI TIMES factor:exD	
+				{: 
+					if(debug) System.out.println("\t regla 11a"); 
+				:}
+		| term:exI OVER factor:exD	
+				{: 
+					if(debug) System.out.println("\t regla 11b"); 
+				:}
+		| factor:ex	
+				{: 
+					if(debug) System.out.println("\t regla 11c"); 
+					//RESULT = ex;
+				:}
 		;
 
-factor      ::= LPAREN exp:ex RPAREN	{: if(debug) System.out.println("\t regla 12a"); 
-							:}
-		| NUM:valor	{: if(debug) System.out.println("\t regla 12b"); 
-					System.out.println("Devolvi nodo numero entero");
-					:}
-		| ID:variable	{: if(debug) System.out.println("\t regla 12c"); 
-					:}
-		| error	{: if(debug) System.out.println("\t regla 12d"); 
+factor      ::= LPAREN exp:ex RPAREN	
+				{: 
+					if(debug) System.out.println("\t regla 12a"); 
+					//RESULT= ex;
 				:}
-		| ID:nom LPAREN RPAREN {: if (debug) System.out.println("\t regla 12e"); :}
-		| ID:nom LPAREN args_stmt RPAREN {: if (debug) System.out.println("\t regla 12f"); :}
+		| NUM:valor	
+				{: 
+					if(debug) System.out.println("\t regla 12b");
+				 
+						System.out.println("Devolvi nodo numero entero");
+					
+						if (valor != null) {
+							//RESULT = new NodoValor(Integer.parseInt(valor));
+						} else { 
+							//RESULT = null;
+							System.out.println("\t ERROR en cup ");
+						}
+					
+				:}
+		| ID:variable	
+				{: 
+					if(debug) System.out.println("\t regla 12c");
+				
+					if(variable != null){
+						System.out.println("\t contruyendo nodoId para lexema:"+variable.toString());
+						//RESULT = new NodoIdentificador(variable.toString());
+					}
+				
+		
+				:}
+		| error	
+				{: 
+					if(debug) System.out.println("\t regla 12d"); 
+				:}
+		| ID:nom LPAREN RPAREN 
+				{: 
+					if (debug) System.out.println("\t regla 12e"); 
+				:}
+		| ID:nom LPAREN args_stmt RPAREN 
+				{: 
+					if (debug) System.out.println("\t regla 12f"); 
+				:}
 		;					
 				

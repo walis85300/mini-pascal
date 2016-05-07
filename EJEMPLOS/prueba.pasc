@@ -1,14 +1,10 @@
 Program hola;
-Var
-	j,i: Integer;
-	b: Boolean;
+
 function Integer dolares(tasasimadi: Boolean)
 	begin
 		read bolivares;
-		if (tasasimadi) or ( t <> 2) then
+		if ( <> tasasimadi) or ( t <> 2) then
 			salida := bolivares / 300;
-		else
-			salida := bolivares / 1100;
 		end;
 		
 		for variable := 0 to 20 do
