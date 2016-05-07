@@ -108,27 +108,26 @@ non terminal NodoBase term;
 non terminal NodoBase factor;
 non terminal begin;
 /* Nuestros no terminales */
-non terminal programa;
-non terminal cuerpo;
-non terminal var_dec_p;
-non terminal var_dec;
-non terminal dec;
-non terminal type;
-non terminal simp_type;
-non terminal arr_type;
-non terminal ind_range; 
-non terminal func_dec_p;
-non terminal argumentos;
-non terminal stm;
-non terminal lista_declaraciones;
-non terminal for_stmt;
-non terminal args_stmt;
-non terminal var_p;
-non terminal func_p;
-non terminal exp_and;
-non terminal exp_logica;
-non terminal main;
-non terminal lista;
+non terminal NodoBase programa;
+non terminal NodoBase cuerpo;
+non terminal NodoBase var_dec_p;
+non terminal NodoBase var_dec;
+non terminal NodoBase dec;
+non terminal NodoBase type;
+non terminal NodoBase simp_type;
+non terminal NodoBase arr_type;
+non terminal NodoBase ind_range; 
+non terminal NodoBase func_dec_p;
+non terminal NodoBase argumentos;
+non terminal NodoBase stm;
+non terminal NodoBase lista_declaraciones;
+non terminal NodoBase for_stmt;
+non terminal NodoBase args_stmt;
+non terminal NodoBase var_p;
+non terminal NodoBase func_p;
+non terminal NodoBase exp_and;
+non terminal NodoBase exp_logica;
+non terminal NodoBase lista;
 
 /* Precedencia de operadores */
 precedence left PLUS;
@@ -140,19 +139,24 @@ precedence left AND;
 
 /* REGLAS GRAMATICALES */
 
-program ::= PROGRAM ID SEMI cuerpo:bdy  
+program ::= PROGRAM ID:nombre SEMI cuerpo:bdy  
 			{: 
 				if(debug) System.out.println("\t regla 1");
 				
-				//ast = bdy;
+				// RESULT = new NodoPrograma(nombre.toString(), bdy);
+				
+				ast = bdy;
+				
+				System.out.println(ast);
 			:}
 			;
 			
 cuerpo ::= var_p func_p stm:stm  
 		{:	
 			if(debug) System.out.println("\t declaracion de variables");
+			// RESULT = new NodoCuerpo(var_p, func_p, stm);
 			
-			//RESULT = stm;		
+			RESULT = stm;		
 		:}
 		;
 		
@@ -194,12 +198,19 @@ argumentos ::= LPAREN var_dec RPAREN
 					:}			
 				;
 				
-lista ::= declaraciones | stm;		
+lista ::= declaraciones:dec 
+				{:
+					RESULT=dec;
+				:}
+				| stm:stm
+				{:
+					RESULT=stm;
+				:};		
 				
 stm ::= BEGIN lista_declaraciones:ldec END SEMI 
 				{:
 					System.out.println("\t lista de declaraciones");
-					//RESULT = ldec;
+					RESULT = new NodoBegin(ldec);
 				:}
 				;				
 				
@@ -207,12 +218,24 @@ lista_declaraciones ::= declaraciones:dec
 				{:
 					if (debug) System.out.println("\t Regla 1 declaraciones");
 					
-					//RESULT = dec;
+					RESULT = dec;
 				:} 
 				|
-				lista_declaraciones declaraciones 
+				declaraciones:dec lista_declaraciones:lista  
 				{:
 					if (debug) System.out.println("\t Regla 2 declaraciones");
+					
+					NodoBase hijoActual = dec;
+					
+					if (hijoActual != null) {
+						while(hijoActual.TieneHermano()) {
+							hijoActual = hijoActual.getHermanoDerecha();
+						}
+						hijoActual.setHermanoDerecha(lista);
+						RESULT = dec;
+					} else {
+						RESULT = lista;
+					}
 				:}	
 				; 
 				
@@ -275,7 +298,7 @@ ind_range ::= NUM:ni DOT DOT NUM:nd
 declaraciones   ::= if_stmt:sif	
 				{: 
 					if(debug) System.out.println("\t regla 3a"); 
-					//RESULT = sif;
+					RESULT = sif;
 				:}
             	| repeat_stmt:srep	
             	{: 
@@ -300,7 +323,7 @@ declaraciones   ::= if_stmt:sif
             	| write_stmt:sesc SEMI	
             	{:
             		if(debug) System.out.println("\t regla 3e"); 
-            		//RESULT = sesc;
+            		RESULT = sesc;
 				:}
             	| error	{: if(debug) System.out.println("\t regla 3f"); 
 				System.out.println("Ocurrio error en cup # 0004");
@@ -312,7 +335,7 @@ if_stmt     ::= IF exp:ex THEN lista:pthen END SEMI
 				{: 
 					if(debug) System.out.println("\t regla 4a"); 
 					
-					//RESULT = new NodoIf(ex, pthen);
+					RESULT = new NodoIf(ex, pthen);
 				:}
 				| 
 				IF exp:ex THEN lista:pthen ELSE lista:pelse
@@ -361,7 +384,7 @@ write_stmt  ::= WRITE term:ex
 			{: 
 				if(debug) System.out.println("\t regla 8");
 				
-				//RESULT = new NodoEscribir(ex); 
+				RESULT = new NodoEscribir(ex); 
 			:}
 		;
 		
@@ -374,7 +397,7 @@ exp ::= exp OR exp_and:ex
 			{: 
 				if (debug) System.out.println("\t regla 9a sin or");
 				
-			//	RESULT = ex; 
+				RESULT = ex; 
 			:}
 		;
 		
@@ -384,7 +407,7 @@ exp_and ::= exp_and AND	exp_logica {: if (debug) System.out.println("\t regla 9b
 			{: 
 				if (debug) System.out.println("\t regla 9b sin and");
 				
-				//RESULT = ex;
+				RESULT = ex;
 			:}
 		;				
 
@@ -409,6 +432,7 @@ exp_logica ::= simple_exp:exI LT simple_exp:exD	{: if(debug) System.out.println(
 		| simple_exp:exI EQ simple_exp:exD	
 			{: 
 				if(debug) System.out.println("\t regla 9b"); 
+				RESULT = new NodoOperacion(exI, tipoOp.igual, exD);
 			:}
 		| NQ simple_exp 
 			{: 
@@ -417,7 +441,7 @@ exp_logica ::= simple_exp:exI LT simple_exp:exD	{: if(debug) System.out.println(
 		| simple_exp:ex	
 			{: 
 				if(debug) System.out.println("\t regla 9c");
-				//RESULT = ex; 
+				RESULT = ex; 
 			:}
 		;
 		 
@@ -444,7 +468,7 @@ simple_exp  ::= simple_exp:exI PLUS term:exD
 		| term:ex	
 				{: 
 					if(debug) System.out.println("\t regla 10c"); 
-					//RESULT=ex;
+					RESULT=ex;
 				:}
 		;
 
@@ -456,17 +480,17 @@ term        ::= term:exI TIMES factor:exD
 				{: 
 					if(debug) System.out.println("\t regla 11b"); 
 				:}
-		| factor:ex	
+		| factor:fact	
 				{: 
 					if(debug) System.out.println("\t regla 11c"); 
-					//RESULT = ex;
+					RESULT = fact;
 				:}
 		;
 
 factor      ::= LPAREN exp:ex RPAREN	
 				{: 
 					if(debug) System.out.println("\t regla 12a"); 
-					//RESULT= ex;
+					RESULT= ex;
 				:}
 		| NUM:valor	
 				{: 
@@ -475,9 +499,9 @@ factor      ::= LPAREN exp:ex RPAREN
 						System.out.println("Devolvi nodo numero entero");
 					
 						if (valor != null) {
-							//RESULT = new NodoValor(Integer.parseInt(valor));
+							RESULT = new NodoValor(Integer.parseInt(valor));
 						} else { 
-							//RESULT = null;
+							RESULT = null;
 							System.out.println("\t ERROR en cup ");
 						}
 					
@@ -488,7 +512,7 @@ factor      ::= LPAREN exp:ex RPAREN
 				
 					if(variable != null){
 						System.out.println("\t contruyendo nodoId para lexema:"+variable.toString());
-						//RESULT = new NodoIdentificador(variable.toString());
+						RESULT = new NodoIdentificador(variable.toString());
 					}
 				
 		
