@@ -310,9 +310,10 @@ declaraciones   ::= if_stmt:sif
 		   			if(debug) System.out.println("\t regla 3f"); 
 		   			RESULT = wrep;
 				:}
-				| for_stmt 
+				| for_stmt:fdec 
 				{: 
-					if (debug) System.out.println("\t regla del for"); 
+					if (debug) System.out.println("\t regla del for");
+					RESULT = fdec;
 				:}
             	| assign_stmt:sasi SEMI	
             	{: 
@@ -366,6 +367,7 @@ while_stmt ::= WHILE exp:prueba DO lista:cuerpo
 for_stmt ::= FOR assign_stmt TO exp DO lista 
 			{:
 				if (debug) System.out.println("\t declaracion del for");
+				RESULT = new NodoFor(ex, ter, cuerpo);
 			:}
 			;		
 
