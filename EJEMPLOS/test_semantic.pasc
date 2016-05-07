@@ -1,6 +1,9 @@
 Program test;
 begin
 	if (true) then
-		write(0);
+		begin
+			write(0);
+			read(x);
+		end;
 	end;	
 end;

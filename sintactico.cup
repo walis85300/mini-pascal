@@ -127,6 +127,8 @@ non terminal var_p;
 non terminal func_p;
 non terminal exp_and;
 non terminal exp_logica;
+non terminal main;
+non terminal lista;
 
 /* Precedencia de operadores */
 precedence left PLUS;
@@ -142,7 +144,7 @@ program ::= PROGRAM ID SEMI cuerpo:bdy
 			{: 
 				if(debug) System.out.println("\t regla 1");
 				
-				ast = bdy;
+				//ast = bdy;
 			:}
 			;
 			
@@ -150,9 +152,10 @@ cuerpo ::= var_p func_p stm:stm
 		{:	
 			if(debug) System.out.println("\t declaracion de variables");
 			
-			RESULT = stm;		
+			//RESULT = stm;		
 		:}
 		;
+		
 	
 var_p ::= VAR var_dec_p
 			|
@@ -189,28 +192,29 @@ argumentos ::= LPAREN var_dec RPAREN
 				| LPAREN RPAREN {:
 					if (debug) System.out.println("\t funcion sin parametros");
 					:}			
-				;		
+				;
+				
+lista ::= declaraciones | stm;		
 				
 stm ::= BEGIN lista_declaraciones:ldec END SEMI 
 				{:
 					System.out.println("\t lista de declaraciones");
-					RESULT = ldec;
-				:}	
+					//RESULT = ldec;
+				:}
 				;				
 				
-lista_declaraciones ::= declaraciones:dec  
+lista_declaraciones ::= declaraciones:dec
 				{:
 					if (debug) System.out.println("\t Regla 1 declaraciones");
 					
-					RESULT = dec;
+					//RESULT = dec;
 				:} 
 				|
-				lista_declaraciones declaraciones 
+				 declaraciones lista_declaraciones
 				{:
 					if (debug) System.out.println("\t Regla 2 declaraciones");
 				:}	
 				; 
-
 				
 
 var_dec	 ::= var_dec COMMA dec 
@@ -229,9 +233,9 @@ dec 	::= dec COL type
 				if (debug) System.out.println("\t regla 5.2");
 			:}
 			| 
-			ID:nombre 
+			factor:fact 
 			{:
-				if (debug) System.out.println("\t nombre de variable: "+nombre);		 
+				//if (debug) System.out.println("\t nombre de variable: "+fact);		 
 			:}
 			;				
 								
@@ -271,7 +275,7 @@ ind_range ::= NUM:ni DOT DOT NUM:nd
 declaraciones   ::= if_stmt:sif	
 				{: 
 					if(debug) System.out.println("\t regla 3a"); 
-					RESULT = sif;
+					//RESULT = sif;
 				:}
             	| repeat_stmt:srep	
             	{: 
@@ -296,21 +300,22 @@ declaraciones   ::= if_stmt:sif
             	| write_stmt:sesc SEMI	
             	{:
             		if(debug) System.out.println("\t regla 3e"); 
-            		RESULT = sesc;
+            		//RESULT = sesc;
 				:}
             	| error	{: if(debug) System.out.println("\t regla 3f"); 
 				System.out.println("Ocurrio error en cup # 0004");
 				:}
             ;
 
-if_stmt     ::= IF exp:ex THEN declaraciones:pthen END SEMI	
+
+if_stmt     ::= IF exp:ex THEN lista:pthen SEMI
 				{: 
 					if(debug) System.out.println("\t regla 4a"); 
 					
-					RESULT = new NodoIf(ex, pthen);
+					//RESULT = new NodoIf(ex, pthen);
 				:}
 				| 
-				IF exp:ex THEN lista_declaraciones:pthen ELSE lista_declaraciones:pelse END SEMI	
+				IF exp:ex THEN lista:pthen ELSE lista:pelse
 				{:
 			 		if(debug) System.out.println("\t regla 4b"); 
 				:}
@@ -338,7 +343,7 @@ for_stmt ::= FOR assign_stmt TO exp DO stm
 assign_stmt ::= ID:variable 	
 			{: 
 				if(debug) System.out.println("\t regla 6 parte del medio"); 
-				String nombre = variable.getName();*/
+				//String nombre = variable.getName();
 			:}
 			ASSIGN exp:ex	
 			{: 
@@ -346,17 +351,17 @@ assign_stmt ::= ID:variable
 			:}
 			;
 
-read_stmt   ::= READ ID:variable	
+read_stmt   ::= READ LPAREN ID RPAREN:variable	 
 			{: if(debug) System.out.println("\t regla 7"); 
 				System.out.println("Leyendo Variable");
 			:}
 			;
 
-write_stmt  ::= WRITE exp:ex	
+write_stmt  ::= WRITE term:ex	
 			{: 
 				if(debug) System.out.println("\t regla 8");
 				
-				RESULT = new NodoEscribir(ex); 
+				//RESULT = new NodoEscribir(ex); 
 			:}
 		;
 		
@@ -369,7 +374,7 @@ exp ::= exp OR exp_and:ex
 			{: 
 				if (debug) System.out.println("\t regla 9a sin or");
 				
-				RESULT = ex; 
+			//	RESULT = ex; 
 			:}
 		;
 		
@@ -379,7 +384,7 @@ exp_and ::= exp_and AND	exp_logica {: if (debug) System.out.println("\t regla 9b
 			{: 
 				if (debug) System.out.println("\t regla 9b sin and");
 				
-				RESULT = ex;
+				//RESULT = ex;
 			:}
 		;				
 
@@ -412,7 +417,7 @@ exp_logica ::= simple_exp:exI LT simple_exp:exD	{: if(debug) System.out.println(
 		| simple_exp:ex	
 			{: 
 				if(debug) System.out.println("\t regla 9c");
-				RESULT = ex; 
+				//RESULT = ex; 
 			:}
 		;
 		 
@@ -439,7 +444,7 @@ simple_exp  ::= simple_exp:exI PLUS term:exD
 		| term:ex	
 				{: 
 					if(debug) System.out.println("\t regla 10c"); 
-					RESULT=ex;
+					//RESULT=ex;
 				:}
 		;
 
@@ -454,14 +459,14 @@ term        ::= term:exI TIMES factor:exD
 		| factor:ex	
 				{: 
 					if(debug) System.out.println("\t regla 11c"); 
-					RESULT = ex;
+					//RESULT = ex;
 				:}
 		;
 
 factor      ::= LPAREN exp:ex RPAREN	
 				{: 
 					if(debug) System.out.println("\t regla 12a"); 
-					RESULT= ex;
+					//RESULT= ex;
 				:}
 		| NUM:valor	
 				{: 
@@ -470,9 +475,9 @@ factor      ::= LPAREN exp:ex RPAREN
 						System.out.println("Devolvi nodo numero entero");
 					
 						if (valor != null) {
-							RESULT = new NodoValor(Integer.parseInt(valor));
+							//RESULT = new NodoValor(Integer.parseInt(valor));
 						} else { 
-							RESULT = null;
+							//RESULT = null;
 							System.out.println("\t ERROR en cup ");
 						}
 					
@@ -483,7 +488,7 @@ factor      ::= LPAREN exp:ex RPAREN
 				
 					if(variable != null){
 						System.out.println("\t contruyendo nodoId para lexema:"+variable.toString());
-						RESULT = new NodoIdentificador(variable.toString());
+						//RESULT = new NodoIdentificador(variable.toString());
 					}
 				
 		
