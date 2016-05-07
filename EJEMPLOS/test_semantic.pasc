@@ -5,5 +5,16 @@ begin
 		begin
 			write(a);
 		end;
+	else
+		begin
+			write(b);
+		end;
+	
 	end;
+	while (a=0) do
+		begin
+		
+			write(pupu);
+		
+		end;
 end;

@@ -307,6 +307,7 @@ declaraciones   ::= if_stmt:sif
 		   		| while_stmt:wrep	
 		   		{: 
 		   			if(debug) System.out.println("\t regla 3f"); 
+		   			RESULT = wrep;
 				:}
 				| for_stmt 
 				{: 
@@ -338,9 +339,11 @@ if_stmt     ::= IF exp:ex THEN lista:pthen END SEMI
 					RESULT = new NodoIf(ex, pthen);
 				:}
 				| 
-				IF exp:ex THEN lista:pthen ELSE lista:pelse
+				IF exp:ex THEN lista:pthen ELSE lista:pelse END SEMI
 				{:
 			 		if(debug) System.out.println("\t regla 4b"); 
+			 		
+			 		RESULT = new NodoIf(ex, pthen, pelse);
 				:}
 				;
 
@@ -353,6 +356,8 @@ repeat_stmt ::= REPEAT lista:cuerpo UNTIL exp:prueba
 while_stmt ::= WHILE exp:prueba DO lista:cuerpo	
 			{: 
 				if(debug) System.out.println("\t regla 5w"); 
+				
+				RESULT = new NodoWhile(prueba, cuerpo);
 			:}
 			;		
 
