@@ -210,7 +210,7 @@ lista_declaraciones ::= declaraciones:dec
 					//RESULT = dec;
 				:} 
 				|
-				 declaraciones lista_declaraciones
+				lista_declaraciones declaraciones 
 				{:
 					if (debug) System.out.println("\t Regla 2 declaraciones");
 				:}	
@@ -308,7 +308,7 @@ declaraciones   ::= if_stmt:sif
             ;
 
 
-if_stmt     ::= IF exp:ex THEN lista:pthen SEMI
+if_stmt     ::= IF exp:ex THEN lista:pthen END SEMI
 				{: 
 					if(debug) System.out.println("\t regla 4a"); 
 					
@@ -321,20 +321,20 @@ if_stmt     ::= IF exp:ex THEN lista:pthen SEMI
 				:}
 				;
 
-repeat_stmt ::= REPEAT lista_declaraciones:cuerpo UNTIL exp:prueba	
+repeat_stmt ::= REPEAT lista:cuerpo UNTIL exp:prueba	
 			{: 
 				if(debug) System.out.println("\t regla 5"); 
 			:}
 			;
 		
-while_stmt ::= WHILE exp:prueba DO stm:cuerpo	
+while_stmt ::= WHILE exp:prueba DO lista:cuerpo	
 			{: 
 				if(debug) System.out.println("\t regla 5w"); 
 			:}
 			;		
 
 
-for_stmt ::= FOR assign_stmt TO exp DO stm 
+for_stmt ::= FOR assign_stmt TO exp DO lista 
 			{:
 				if (debug) System.out.println("\t declaracion del for");
 			:}

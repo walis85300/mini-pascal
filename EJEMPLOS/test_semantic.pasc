@@ -3,7 +3,10 @@ begin
 	if (true) then
 		begin
 			write(0);
-			read(x);
+			read(x);			
 		end;
-	end;	
+	end;
+		
+	for a:=0 to 1333 do
+				write(0);
 end;
