@@ -134,8 +134,8 @@ non terminal lista;
 precedence left PLUS;
 precedence left MINUS;
 precedence left TIMES;
-precedence left AND;
 precedence left OR;
+precedence left AND;
 
 
 /* REGLAS GRAMATICALES */
@@ -175,7 +175,7 @@ var_dec_p ::= var_dec_p SEMI
 			:} 
 			;
 			
-func_p ::= FUNCTION func_dec_p
+func_p ::= FUNCTION func_dec_p func_p
 			|
 			;			
 						
@@ -351,7 +351,7 @@ assign_stmt ::= ID:variable
 			:}
 			;
 
-read_stmt   ::= READ LPAREN ID RPAREN:variable	 
+read_stmt   ::= READ exp 
 			{: if(debug) System.out.println("\t regla 7"); 
 				System.out.println("Leyendo Variable");
 			:}
