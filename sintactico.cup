@@ -130,6 +130,7 @@ non terminal NodoBase exp_and;
 non terminal NodoBase exp_logica;
 non terminal NodoBase lista;
 non terminal NodoBase proc_p;
+non terminal String func_type;
 
 /* Precedencia de operadores */
 precedence left PLUS;
@@ -215,23 +216,44 @@ var_dec_p ::= var_dec_p:var_dec_p SEMI
 			:} 
 			;
 			
-func_p ::= FUNCTION func_dec_p func_p
-			| {:RESULT = null; :}
+func_p ::= FUNCTION func_dec_p:func func_p:funcp
+			{:
+				NodoBase hijoActual = func;
+					
+					if (hijoActual != null) {
+						while(hijoActual.TieneHermano()) {
+							hijoActual = hijoActual.getHermanoDerecha();
+						}
+						hijoActual.setHermanoDerecha(funcp);
+						RESULT = func;
+					} else {
+						RESULT = funcp;
+					}
+			:}
+			| 
+			{:
+				RESULT = null; 
+			:}
 			;			
 						
-func_dec_p ::=  simp_type ID:nf argumentos stm 
+func_dec_p ::=  func_type:func_type ID:nf argumentos:args stm:stm 
 				{:
 				 	if (debug) System.out.println("\t Declaracion de la funcion"+nf);
+				 	
+				 	RESULT = new NodoFuncion(func_type, nf, args, 0, stm);
 				:}
 				;		
 				 
-argumentos ::= LPAREN var_dec RPAREN 
+argumentos ::= LPAREN var_dec_p:vars RPAREN 
 				{:
 					if (debug) System.out.println("\t regla 8 Argumentos");
+					RESULT = vars;
 				:}
-				| LPAREN RPAREN {:
+				| LPAREN RPAREN 
+				{:
 					if (debug) System.out.println("\t funcion sin parametros");
-					:}			
+					RESULT = null;	
+				:}			
 				;
 				
 lista ::= declaraciones:dec 
@@ -340,17 +362,30 @@ arr_type ::= ARRAY LB ind_range RB OF simp_type
 				if (debug) System.out.println("\t regla 7");
 			:} 
 			;
+			
+func_type ::= INTEGER 
+			{:
+				RESULT = "Integer";
+			:}
+			|
+			BOOLEAN 
+			{:
+				RESULT = "Boolean";
+			:}
+			;
 
 simp_type ::= INTEGER 
 				{:
 					if (debug) System.out.println("type Integer");
-					this.tipo = "integer";
+					this.tipo = "Integer";
+					
 					
 				:} 
 				| BOOLEAN 
 				{:
 					if (debug) System.out.println("type Boolean");
-					this.tipo = "boolean";
+					this.tipo = "Boolean";
+					
 				:} 
 				;
 
