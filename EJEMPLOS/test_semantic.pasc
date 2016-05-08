@@ -5,5 +5,15 @@ Var
 begin
 
 	write(0);
+	
+	for a:=0 to 2 do
+	begin
+		write(b);
+	end;
+	
+	repeat
+		write(c);
+	until x = 0
+	
 
 end;

@@ -367,19 +367,22 @@ declaraciones   ::= if_stmt:sif
             	| repeat_stmt:srep	
             	{: 
             		if(debug) System.out.println("\t regla 3b"); 
+            		RESULT = srep;
 				:}
 		   		| while_stmt:wrep	
 		   		{: 
 		   			if(debug) System.out.println("\t regla 3f"); 
 		   			RESULT = wrep;
 				:}
-				| for_stmt 
+				| for_stmt:fdec 
 				{: 
-					if (debug) System.out.println("\t regla del for"); 
+					if (debug) System.out.println("\t regla del for");
+					RESULT = fdec;
 				:}
             	| assign_stmt:sasi SEMI	
             	{: 
             		if(debug) System.out.println("\t regla 3c"); 
+            		RESULT = sasi;
 				:}
             	| read_stmt:slec SEMI	
             	{: 
@@ -413,7 +416,8 @@ if_stmt     ::= IF exp:ex THEN lista:pthen END SEMI
 
 repeat_stmt ::= REPEAT lista:cuerpo UNTIL exp:prueba	
 			{: 
-				if(debug) System.out.println("\t regla 5"); 
+				if(debug) System.out.println("\t regla 5");
+				RESULT = new NodoRepeat(cuerpo,prueba); 
 			:}
 			;
 		
@@ -426,9 +430,11 @@ while_stmt ::= WHILE exp:prueba DO lista:cuerpo
 			;		
 
 
-for_stmt ::= FOR assign_stmt TO exp DO lista 
+
+for_stmt ::= FOR assign_stmt:ex TO term:ter DO lista:cuerpo 
 			{:
 				if (debug) System.out.println("\t declaracion del for");
+				RESULT = new NodoFor(ex, ter, cuerpo);
 			:}
 			;		
 
@@ -440,6 +446,18 @@ assign_stmt ::= ID:variable
 			ASSIGN exp:ex	
 			{: 
 				if(debug) System.out.println("\t regla 6 parte final");
+				
+				if (variable != null) {
+				
+					RESULT = new NodoAsignacion(variable.toString(), ex);
+				
+				} else {
+				
+					RESULT = null;
+					
+					System.out.println("\t ocurrio error en cup");
+				
+				}
 			:}
 			;
 
@@ -529,6 +547,7 @@ args_stmt ::= exp COMMA args_stmt
 simple_exp  ::= simple_exp:exI PLUS term:exD	
 				{: 
 					if(debug) System.out.println("\t regla 10a"); 
+					RESULT = new NodoOperacion(exI,tipoOp.mas,exD);
 				:}
 		| simple_exp:exI MINUS term:exD	
 				{: 
