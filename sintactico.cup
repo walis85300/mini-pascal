@@ -60,7 +60,7 @@ terminal UNTIL;
 terminal READ;
 terminal WRITE;
 terminal String ID;
-terminal String NUM;
+terminal Integer NUM;
 terminal ASSIGN;
 terminal EQ;
 terminal LT;
@@ -146,18 +146,16 @@ program ::= PROGRAM ID:nombre SEMI cuerpo:bdy
 			{: 
 				if(debug) System.out.println("\t regla 1");
 				
-				 ast = new NodoProgram(nombre, bdy);
-				
+				 ast = new NodoProgram(nombre, bdy);		
 				
 				System.out.println(ast);
 			:}
 			;
-			
 cuerpo ::= var_p:vars func_p:funs proc_p:procs stm:stm 
 		{:	
 			if(debug) System.out.println("\t declaracion de variables");
 			 RESULT = new NodoMain(vars, funs, procs, stm);
-			
+
 		:}
 		;
 		
@@ -417,8 +415,13 @@ declaraciones   ::= if_stmt:sif
 				:}
             	| assign_stmt:sasi SEMI	
             	{: 
+<<<<<<< HEAD
             		if(debug) System.out.println("\t regla 3c"); 
             		RESULT = sasi;
+=======
+            		if(debug) System.out.println("\t regla 3c");
+            		RESULT = sasi; 
+>>>>>>> ae2eb36a999390241c8d7d176d898cdaf5f8b1a7
 				:}
             	| read_stmt:slec SEMI	
             	{: 
@@ -452,8 +455,14 @@ if_stmt     ::= IF exp:ex THEN lista:pthen END SEMI
 
 repeat_stmt ::= REPEAT lista:cuerpo UNTIL exp:prueba	
 			{: 
+<<<<<<< HEAD
 				if(debug) System.out.println("\t regla 5");
 				RESULT = new NodoRepeat(cuerpo,prueba); 
+=======
+				if(debug) System.out.println("\t regla 5"); 
+				
+				RESULT = new NodoRepeat(cuerpo,prueba);
+>>>>>>> ae2eb36a999390241c8d7d176d898cdaf5f8b1a7
 			:}
 			;
 		
@@ -482,6 +491,7 @@ assign_stmt ::= ID:variable
 			ASSIGN exp:ex	
 			{: 
 				if(debug) System.out.println("\t regla 6 parte final");
+<<<<<<< HEAD
 				
 				if (variable != null) {
 				
@@ -494,6 +504,14 @@ assign_stmt ::= ID:variable
 					System.out.println("\t ocurrio error en cup");
 				
 				}
+=======
+				if(variable!=null)
+					RESULT = new NodoAsignacion(variable.toString(),ex);
+				else{
+					RESULT = null;
+					System.out.println("Ocurrio error en cup # 0001");
+					}
+>>>>>>> ae2eb36a999390241c8d7d176d898cdaf5f8b1a7
 			:}
 			;
 
@@ -582,8 +600,13 @@ args_stmt ::= exp COMMA args_stmt
 
 simple_exp  ::= simple_exp:exI PLUS term:exD	
 				{: 
+<<<<<<< HEAD
 					if(debug) System.out.println("\t regla 10a"); 
 					RESULT = new NodoOperacion(exI,tipoOp.mas,exD);
+=======
+					if(debug) System.out.println("\t regla 10a");
+					RESULT = new NodoOperacion(exI,tipoOp.mas,exD); 
+>>>>>>> ae2eb36a999390241c8d7d176d898cdaf5f8b1a7
 				:}
 		| simple_exp:exI MINUS term:exD	
 				{: 
