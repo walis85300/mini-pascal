@@ -38,6 +38,7 @@ action code {:
 	private boolean debug=true;
 	private NodoBase ast=null;
 	private int lineanum=0;
+	String tipo="";
 	
 	//Debe ser llamada solo despues de un parse(), en caso contrario retornara null siempre;
 	public NodoBase getASTroot(){
@@ -111,7 +112,7 @@ non terminal begin;
 non terminal NodoBase programa;
 non terminal NodoBase cuerpo;
 non terminal NodoBase var_dec_p;
-non terminal NodoBase var_dec;
+non terminal NodoVar var_dec;
 non terminal NodoBase dec;
 non terminal NodoBase type;
 non terminal NodoBase simp_type;
@@ -151,7 +152,7 @@ program ::= PROGRAM ID:nombre SEMI cuerpo:bdy
 			:}
 			;
 			
-cuerpo ::= var_p:vars func_p:funs proc_p:procs stm:stm  
+cuerpo ::= var_p:vars func_p:funs proc_p:procs stm:stm 
 		{:	
 			if(debug) System.out.println("\t declaracion de variables");
 			 RESULT = new NodoMain(vars, funs, procs, stm);
@@ -162,21 +163,55 @@ cuerpo ::= var_p:vars func_p:funs proc_p:procs stm:stm
 proc_p ::= {:RESULT = null; :} ;
 		
 	
-var_p ::= VAR var_dec_p
+var_p ::= VAR var_dec_p:var_dec_p 
+			{:
+				RESULT = var_dec_p;
+			:}
 			| {:RESULT = null; :}
 			;	
 			
-var_dec_p ::= var_dec_p SEMI  
+var_dec_p ::= var_dec_p:var_dec_p SEMI  
 			{: 
 				if (debug) System.out.println("\t declara variable regla 3.1"); 
+				
+				RESULT = var_dec_p;
 			:}
-			| var_dec_p SEMI  var_dec   
+			| var_dec_p:var_dec_p SEMI  var_dec:var_dec   
 			{: 
 				if (debug) System.out.println("\t declara variable  regla 3.2"); 
+				NodoVar hijoActual1 = var_dec;
+			   hijoActual1.setType_var(tipo);
+			   while( hijoActual1.TieneHermano() ){
+			   	
+			   	hijoActual1 = (NodoVar)hijoActual1.getHermanoDerecha();
+			   	hijoActual1.setType_var(tipo);
+			   
+			   } 
+			   NodoBase hijoActual = var_dec_p;
+				if(hijoActual !=null){
+					while(hijoActual.TieneHermano()){
+						hijoActual = hijoActual.getHermanoDerecha();
+					}
+						hijoActual.setHermanoDerecha(var_dec);
+						RESULT = var_dec_p;
+					}else{
+						RESULT = var_dec;
+				}
 			:}
-			| var_dec   
+			| var_dec:var_dec 
 			{: 
 				if (debug) System.out.println("\t declara variable regla 3,3");
+				
+				 NodoVar hijoActual1 = var_dec;
+			   hijoActual1.setType_var(tipo);
+			   while( hijoActual1.TieneHermano() ){
+			   	
+			   	hijoActual1 = (NodoVar)hijoActual1.getHermanoDerecha();
+			   	hijoActual1.setType_var(tipo);
+			   
+			   } 
+			   
+			   RESULT = (NodoBase)var_dec;
 			:} 
 			;
 			
@@ -241,36 +276,61 @@ lista_declaraciones ::= declaraciones:dec
 				; 
 				
 
-var_dec	 ::= var_dec COMMA dec 
+var_dec	::= var_dec:var_dec COMMA dec:dec 
 			{:
 				if (debug) System.out.println("\t regla 4.2");
+				NodoBase hijoActual = var_dec;
+					if(hijoActual !=null){   
+						while(hijoActual.TieneHermano()){
+							hijoActual = hijoActual.getHermanoDerecha();			
+						}
+						hijoActual.setHermanoDerecha(dec);
+						RESULT = var_dec;
+					}else{
+						RESULT = (NodoVar)dec;
+					}
 			:}
 			|
-			dec 
+			dec:dec 
 			{:
 				if (debug) System.out.println("\t regla 4.1"); 
+				RESULT = (NodoVar)dec;
 			:}			
 			;
 			
-dec 	::= dec COL type  
+dec 	::= dec:dec COL type:type 
 			{:
 				if (debug) System.out.println("\t regla 5.2");
+				NodoVar hijoActual = (NodoVar)dec;
+					if(hijoActual !=null){
+						while(hijoActual.TieneHermano()){
+							hijoActual = (NodoVar) hijoActual.getHermanoDerecha();
+						}
+						hijoActual.setHermanoDerecha(type);
+						RESULT = (NodoVar)dec;
+					}else{
+						RESULT = type;
+					}
 			:}
 			| 
-			factor:fact 
+			ID:nombre 
 			{:
-				//if (debug) System.out.println("\t nombre de variable: "+fact);		 
+				//if (debug) System.out.println("\t nombre de variable: "+fact);
+				//ojo aqui con el
+				RESULT = new NodoVar(nombre,"");		 
 			:}
 			;				
 								
 
-type	::= simp_type 
+type	::= simp_type:simp_type 
 			{:
-				if (debug) System.out.println("\t regla 6.1");				
+				if (debug) System.out.println("\t regla 6.1");	
+				RESULT = simp_type;			
 			:} 
-			| arr_type 
+			| arr_type:arr_type 
 			{:
 				if (debug) System.out.println("\t regla 6.2");
+			   RESULT = arr_type;
 			:}
 			;
 			
@@ -284,10 +344,13 @@ arr_type ::= ARRAY LB ind_range RB OF simp_type
 simp_type ::= INTEGER 
 				{:
 					if (debug) System.out.println("type Integer");
+					this.tipo = "integer";
+					
 				:} 
 				| BOOLEAN 
 				{:
 					if (debug) System.out.println("type Boolean");
+					this.tipo = "boolean";
 				:} 
 				;
 
@@ -304,6 +367,7 @@ declaraciones   ::= if_stmt:sif
             	| repeat_stmt:srep	
             	{: 
             		if(debug) System.out.println("\t regla 3b"); 
+            		RESULT = srep;
 				:}
 		   		| while_stmt:wrep	
 		   		{: 
@@ -318,6 +382,7 @@ declaraciones   ::= if_stmt:sif
             	| assign_stmt:sasi SEMI	
             	{: 
             		if(debug) System.out.println("\t regla 3c"); 
+            		RESULT = sasi;
 				:}
             	| read_stmt:slec SEMI	
             	{: 
@@ -351,7 +416,8 @@ if_stmt     ::= IF exp:ex THEN lista:pthen END SEMI
 
 repeat_stmt ::= REPEAT lista:cuerpo UNTIL exp:prueba	
 			{: 
-				if(debug) System.out.println("\t regla 5"); 
+				if(debug) System.out.println("\t regla 5");
+				RESULT = new NodoRepeat(cuerpo,prueba); 
 			:}
 			;
 		
@@ -364,7 +430,8 @@ while_stmt ::= WHILE exp:prueba DO lista:cuerpo
 			;		
 
 
-for_stmt ::= FOR assign_stmt TO exp DO lista 
+
+for_stmt ::= FOR assign_stmt:ex TO term:ter DO lista:cuerpo 
 			{:
 				if (debug) System.out.println("\t declaracion del for");
 				RESULT = new NodoFor(ex, ter, cuerpo);
@@ -379,6 +446,18 @@ assign_stmt ::= ID:variable
 			ASSIGN exp:ex	
 			{: 
 				if(debug) System.out.println("\t regla 6 parte final");
+				
+				if (variable != null) {
+				
+					RESULT = new NodoAsignacion(variable.toString(), ex);
+				
+				} else {
+				
+					RESULT = null;
+					
+					System.out.println("\t ocurrio error en cup");
+				
+				}
 			:}
 			;
 
@@ -468,6 +547,7 @@ args_stmt ::= exp COMMA args_stmt
 simple_exp  ::= simple_exp:exI PLUS term:exD	
 				{: 
 					if(debug) System.out.println("\t regla 10a"); 
+					RESULT = new NodoOperacion(exI,tipoOp.mas,exD);
 				:}
 		| simple_exp:exI MINUS term:exD	
 				{: 

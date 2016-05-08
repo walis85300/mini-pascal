@@ -1,21 +1,19 @@
 Program test;
+Var
+	i,j: Integer;
+	b: Boolean;
 begin
+
 	write(0);
-	x := x + 2;
-	if (a=0) then
-		begin
-			write(a);
-		end;
-	else
-		begin
-			write(b);
-		end;
 	
+	for a:=0 to 2 do
+	begin
+		write(b);
 	end;
-	while (a=0) do
-		begin
-		
-			write(pupu);
-		
-		end;
+	
+	repeat
+		write(c);
+	until x = 0
+	
+
 end;
