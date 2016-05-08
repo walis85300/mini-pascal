@@ -103,6 +103,9 @@ espacio		= [ \t]+
 "function" { if (debug) System.out.println("token FUNCTION");
 			return sf.newSymbol("FUNCTION", sym.FUNCTION);
 			}	
+"return" 	{ if (debug) System.out.println("token RETURN");
+			return sf.newSymbol("RETURN", sym.RETURN);
+			}			
 "procedure" { if (debug) System.out.println("token PROCEDURE");
 			return sf.newSymbol("PROCEDURE", sym.PROCEDURE);
 			}						

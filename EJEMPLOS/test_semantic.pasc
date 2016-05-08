@@ -21,5 +21,6 @@ begin
 		write(c);
 	until x = 0
 	
+	return x+s;
 
 end;
