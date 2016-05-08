@@ -2,15 +2,12 @@ Program test;
 Var
 	i,j: Integer;
 	b: Boolean;
+	h,i: Integer;
 	g: Array [1..4] of Integer;
-function Integer pupu(i: Integer; b: Boolean) 
-begin
-	write(0);
-end;
-function Integer sdfsdfds(i: Integer; b: Boolean) 
-begin
-	write(0);
-end;
+procedure hola (i:Integer);
+	begin
+		write(0);
+	end;
 begin
 
 	write(0);
