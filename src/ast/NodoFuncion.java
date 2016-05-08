@@ -55,7 +55,7 @@ public class NodoFuncion extends NodoBase{
 		this.name_function = name_function;
 		this.args = args;
 		this.body_function = body_function;
-		this.number_args = number_args;
+		this.number_args = 0;
 	}
 
 	public String getType_function() {
