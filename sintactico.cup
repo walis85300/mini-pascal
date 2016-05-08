@@ -392,6 +392,7 @@ simp_type ::= INTEGER
 ind_range ::= NUM:ni DOT DOT NUM:nd 
 				{:
 					if (debug) System.out.println("Array entre"+ni+" "+nd);
+					RESULT = new NodoArray(Integer.parseInt(ni),Integer.parseInt(nd));
 				:}
 				;		
 declaraciones   ::= if_stmt:sif	
