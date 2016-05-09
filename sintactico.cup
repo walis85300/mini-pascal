@@ -39,6 +39,7 @@ action code {:
 	private NodoBase ast=null;
 	private int lineanum=0;
 	String tipo="";
+	private NodoArray nodoarray= null;
 	
 	//Debe ser llamada solo despues de un parse(), en caso contrario retornara null siempre;
 	public NodoBase getASTroot(){
@@ -60,7 +61,7 @@ terminal UNTIL;
 terminal READ;
 terminal WRITE;
 terminal String ID;
-terminal Integer NUM;
+terminal String NUM;
 terminal ASSIGN;
 terminal EQ;
 terminal LT;
@@ -230,13 +231,15 @@ var_dec_p ::= var_dec_p:var_dec_p SEMI
 				if (debug) System.out.println("\t declara variable regla 3,3");
 				
 				 NodoVar hijoActual1 = var_dec;
-			   hijoActual1.setType_var(tipo);
-			   while( hijoActual1.TieneHermano() ){
-			   	
-			   	hijoActual1 = (NodoVar)hijoActual1.getHermanoDerecha();
 			   	hijoActual1.setType_var(tipo);
+			   	while( hijoActual1.TieneHermano() ){
+			   	
+			   		hijoActual1 = (NodoVar)hijoActual1.getHermanoDerecha();
+			   		hijoActual1.setType_var(tipo);
 			   
-			   } 
+			   	} 
+			   	
+			   	nodoarray = null;
 			   
 			   RESULT = (NodoBase)var_dec;
 			:} 
@@ -343,13 +346,14 @@ var_dec	::= var_dec:var_dec COMMA dec:dec
 			{:
 				if (debug) System.out.println("\t regla 4.1"); 
 				RESULT = (NodoVar)dec;
+				
 			:}			
 			;
 			
 dec 	::= dec:dec COL type:type 
 			{:
 				if (debug) System.out.println("\t regla 5.2");
-				NodoVar hijoActual = (NodoVar)dec;
+				NodoVar hijoActual = (NodoVar)dec;				
 					if(hijoActual !=null){
 						while(hijoActual.TieneHermano()){
 							hijoActual = (NodoVar) hijoActual.getHermanoDerecha();
@@ -365,7 +369,9 @@ dec 	::= dec:dec COL type:type
 			{:
 				//if (debug) System.out.println("\t nombre de variable: "+fact);
 				//ojo aqui con el
-				RESULT = new NodoVar(nombre,"");		 
+				
+				RESULT = new NodoVar(nombre,"");
+
 			:}
 			;				
 								
@@ -383,9 +389,10 @@ type	::= simp_type:simp_type
 			;
 			
 
-arr_type ::= ARRAY LB ind_range RB OF simp_type	
+arr_type ::= ARRAY LB ind_range:rango RB OF simp_type	
 			{:
 				if (debug) System.out.println("\t regla 7");
+				RESULT = rango;
 			:} 
 			;
 			
@@ -404,13 +411,14 @@ simp_type ::= INTEGER
 				{:
 					if (debug) System.out.println("type Integer");
 					this.tipo = "Integer";
-					
+					RESULT = null;
 					
 				:} 
 				| BOOLEAN 
 				{:
 					if (debug) System.out.println("type Boolean");
 					this.tipo = "Boolean";
+					RESULT = null;
 					
 				:} 
 				;
@@ -418,7 +426,9 @@ simp_type ::= INTEGER
 ind_range ::= NUM:ni DOT DOT NUM:nd 
 				{:
 					if (debug) System.out.println("Array entre"+ni+" "+nd);
+					nodoarray = new NodoArray(Integer.parseInt(ni),Integer.parseInt(nd));					
 					RESULT = new NodoArray(Integer.parseInt(ni),Integer.parseInt(nd));
+					
 				:}
 				;		
 declaraciones   ::= if_stmt:sif	
@@ -443,13 +453,9 @@ declaraciones   ::= if_stmt:sif
 				:}
             	| assign_stmt:sasi SEMI	
             	{: 
-<<<<<<< HEAD
             		if(debug) System.out.println("\t regla 3c"); 
             		RESULT = sasi;
-=======
-            		if(debug) System.out.println("\t regla 3c");
-            		RESULT = sasi; 
->>>>>>> ae2eb36a999390241c8d7d176d898cdaf5f8b1a7
+
 				:}
             	| read_stmt:slec SEMI	
             	{: 
@@ -491,14 +497,9 @@ if_stmt     ::= IF exp:ex THEN lista:pthen END SEMI
 
 repeat_stmt ::= REPEAT lista:cuerpo UNTIL exp:prueba	
 			{: 
-<<<<<<< HEAD
 				if(debug) System.out.println("\t regla 5");
 				RESULT = new NodoRepeat(cuerpo,prueba); 
-=======
-				if(debug) System.out.println("\t regla 5"); 
-				
-				RESULT = new NodoRepeat(cuerpo,prueba);
->>>>>>> ae2eb36a999390241c8d7d176d898cdaf5f8b1a7
+
 			:}
 			;
 		
@@ -527,7 +528,6 @@ assign_stmt ::= ID:variable
 			ASSIGN exp:ex	
 			{: 
 				if(debug) System.out.println("\t regla 6 parte final");
-<<<<<<< HEAD
 				
 				if (variable != null) {
 				
@@ -540,14 +540,6 @@ assign_stmt ::= ID:variable
 					System.out.println("\t ocurrio error en cup");
 				
 				}
-=======
-				if(variable!=null)
-					RESULT = new NodoAsignacion(variable.toString(),ex);
-				else{
-					RESULT = null;
-					System.out.println("Ocurrio error en cup # 0001");
-					}
->>>>>>> ae2eb36a999390241c8d7d176d898cdaf5f8b1a7
 			:}
 			;
 
@@ -636,13 +628,8 @@ args_stmt ::= exp COMMA args_stmt
 
 simple_exp  ::= simple_exp:exI PLUS term:exD	
 				{: 
-<<<<<<< HEAD
 					if(debug) System.out.println("\t regla 10a"); 
 					RESULT = new NodoOperacion(exI,tipoOp.mas,exD);
-=======
-					if(debug) System.out.println("\t regla 10a");
-					RESULT = new NodoOperacion(exI,tipoOp.mas,exD); 
->>>>>>> ae2eb36a999390241c8d7d176d898cdaf5f8b1a7
 				:}
 		| simple_exp:exI MINUS term:exD	
 				{: 

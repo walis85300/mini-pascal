@@ -1,26 +1,9 @@
 Program test;
 Var
-	i,j: Integer;
-	b: Boolean;
-	h,i: Integer;
-	g: Array [1..4] of Integer;
-procedure hola (i:Integer);
-	begin
-		write(0);
-	end;
+	g,r: Array [1..4] of Integer;
 begin
 
 	write(0);
-	
-	for a:=0 to 2 do
-	begin
-		write(b);
-	end;
-	
-	repeat
-		write(c);
-	until x = 0
-	
-	return x+s;
+
 
 end;

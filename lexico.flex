@@ -58,10 +58,10 @@ espacio		= [ \t]+
 "if"            {	if(debug) System.out.println("token IF");
 			return sf.newSymbol("IF",sym.IF);
 			}
-"var"		{		if(debug) System.out.println("token VAR");
+"Var"		{		if(debug) System.out.println("token VAR");
 			return sf.newSymbol("VAR", sym.VAR);				
 			}
-"program"	{	if(debug) System.out.println("token PROGRAM");
+"Program"	{	if(debug) System.out.println("token PROGRAM");
 			return sf.newSymbol("PROGRAM", sym.PROGRAM);			
 			}			
 "then"          { if(debug) System.out.println("token THEN");
@@ -91,13 +91,13 @@ espacio		= [ \t]+
 "write"         {	if(debug) System.out.println("token WRITE");
 			return sf.newSymbol("WRITE",sym.WRITE);
 			}
-"integer" 	{ if (debug) System.out.println("token INTEGER");
+"Integer" 	{ if (debug) System.out.println("token INTEGER");
 			return sf.newSymbol("INTEGER", sym.INTEGER);
 			}
-"boolean"	{ if (debug) System.out.println("token BOOLEAN");
+"Boolean"	{ if (debug) System.out.println("token BOOLEAN");
 			return sf.newSymbol("BOOLEAN", sym.BOOLEAN);
 			}		
-"array" 	{ if (debug) System.out.println("token ARRAY");
+"Array" 	{ if (debug) System.out.println("token ARRAY");
 			return sf.newSymbol("ARRAY", sym.ARRAY);
 			}
 "function" { if (debug) System.out.println("token FUNCTION");

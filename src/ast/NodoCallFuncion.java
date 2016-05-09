@@ -4,12 +4,14 @@ public class NodoCallFuncion extends NodoBase{
 	
 	private String name_function;
 	private NodoBase args;
+	private int numbers_args;
 	
 	public NodoCallFuncion()
 	{
 		super();
 		this.name_function = "";
 		this.args = null;
+		this.numbers_args = 0;
 	}
 	
 	public NodoCallFuncion(String name_function)
@@ -17,13 +19,15 @@ public class NodoCallFuncion extends NodoBase{
 		super();
 		this.name_function = name_function;
 		this.args = null;
+		this.numbers_args = 0;
 	}
 	
-	public NodoCallFuncion(String name_function, NodoBase args)
+	public NodoCallFuncion(String name_function, NodoBase args, int numbers_args)
 	{
 		super();
 		this.name_function = name_function;
 		this.args = args;
+		this.numbers_args = numbers_args;
 	}
 
 	public String getName_function() {
@@ -40,6 +44,14 @@ public class NodoCallFuncion extends NodoBase{
 
 	public void setArgs(NodoBase args) {
 		this.args = args;
+	}
+	
+	public int getNumbers_args() {
+		return numbers_args;
+	}
+
+	public void setNumbers_args(int numbers_args) {
+		this.numbers_args = numbers_args;
 	}
 	
 }

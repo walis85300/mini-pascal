@@ -1,5 +1,8 @@
 Program hola;
 
+Var
+	i:Integer;
+
 function Integer dolares(tasasimadi: Boolean)
 	begin
 		read bolivares;

@@ -1,0 +1,9 @@
+Program cicloRepeatUntil;
+begin
+	repeat
+		begin
+			write(x);
+			x := x + 1;
+		end;
+	until x = 50
+end;

@@ -1,0 +1,19 @@
+Program paso;
+Var
+	numero, acumulador: Integer;
+function Integer incremento(paso: integer)
+	begin
+		for variable:=0 to 30 do
+			begin
+				numero := numero + 1;
+			end; 
+	end;
+	
+begin
+
+	acumulador := incremento(4);
+	write(acumulador);
+	
+end;
+
+ 
