@@ -729,6 +729,18 @@ factor      ::= LPAREN exp:ex RPAREN
 				
 		
 				:}
+		| ID:nom LPAREN RPAREN
+				{: 
+					if (debug) System.out.println("\t regla 12e");
+					
+					RESULT = new NodoCallFuncion(nom);
+				:}
+		| ID:nom LPAREN args_stmt:args RPAREN SEMI
+				{: 
+					if (debug) System.out.println("\t regla 12f"); 
+					
+					RESULT = new NodoCallFuncion(nom, args);
+				:}
 		| error	
 				{: 
 					if(debug) System.out.println("\t regla 12d"); 

@@ -11,6 +11,6 @@ Var
 
 begin
 	
-	g(a, b, f, s);
+	g(a, b, f(), s);
 
 end;
