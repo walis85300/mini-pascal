@@ -1,26 +1,16 @@
 Program test;
+{
+	Programa de prueba 
+		del compilador de mini pascal
+}
 Var
 	i,j: Integer;
 	b: Boolean;
 	h,i: Integer;
 	g: Array [1..4] of Integer;
-procedure hola (i:Integer);
-	begin
-		write(0);
-	end;
-begin
 
-	write(0);
+begin
 	
-	for a:=0 to 2 do
-	begin
-		write(b);
-	end;
-	
-	repeat
-		write(c);
-	until x = 0
-	
-	return x+s;
+	g(a, b, f, s);
 
 end;
