@@ -92,6 +92,8 @@ terminal LB;
 terminal RB;
 terminal FUNCTION;
 terminal TO;
+terminal PROCEDURE;
+terminal RETURN;
 
 /* Simbolos No Terminales */
 non terminal program;
@@ -130,6 +132,7 @@ non terminal NodoBase exp_and;
 non terminal NodoBase exp_logica;
 non terminal NodoBase lista;
 non terminal NodoBase proc_p;
+non terminal NodoBase proc_dec_p;
 non terminal String func_type;
 
 /* Precedencia de operadores */
@@ -159,7 +162,32 @@ cuerpo ::= var_p:vars func_p:funs proc_p:procs stm:stm
 		:}
 		;
 		
-proc_p ::= {:RESULT = null; :} ;
+proc_p ::= PROCEDURE proc_dec_p:proc proc_p:procp
+			{:
+				NodoBase hijoActual = proc;
+					
+					if (hijoActual != null) {
+						while(hijoActual.TieneHermano()) {
+							hijoActual = hijoActual.getHermanoDerecha();
+						}
+						hijoActual.setHermanoDerecha(procp);
+						RESULT = proc;
+					} else {
+						RESULT = procp;
+					}
+			:}
+			| 
+			{:
+				RESULT = null;
+			:}
+			;
+			
+proc_dec_p ::= ID:np argumentos:args SEMI stm:stm 
+				{:
+					if(debug) System.out.println("\t declara procedure");
+					RESULT = new NodoProcedure(np, stm, args, 0); 
+				:} 
+				;				
 		
 	
 var_p ::= VAR var_dec_p:var_dec_p 
@@ -432,6 +460,14 @@ declaraciones   ::= if_stmt:sif
             		if(debug) System.out.println("\t regla 3e"); 
             		RESULT = sesc;
 				:}
+				|RETURN exp:ex SEMI
+				{:
+					RESULT = new NodoReturn(ex);
+				:}	
+				| RETURN SEMI
+				{:
+					RESULT = new NodoReturn(null);
+				:}			
             	| error	{: if(debug) System.out.println("\t regla 3f"); 
 				System.out.println("Ocurrio error en cup # 0004");
 				:}
