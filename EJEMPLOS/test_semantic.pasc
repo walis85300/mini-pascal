@@ -1,6 +1,10 @@
 Program test;
 Var
-	g,r: Array [1..4] of Integer;
+	b: Boolean;
+	lfgf,lhjh, ugfg, uoi: Array [1..3] of Boolean;
+	i,j,k,l: Integer;
+	r: Array [1..3] of Integer;
+	
 begin
 
 	write(0);

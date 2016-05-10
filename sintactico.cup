@@ -209,14 +209,18 @@ var_dec_p ::= var_dec_p:var_dec_p SEMI
 				if (debug) System.out.println("\t declara variable  regla 3.2"); 
 				NodoVar hijoActual1 = var_dec;
 			   hijoActual1.setType_var(tipo);
+			   if (this.nodoarray != null)
+			   		hijoActual1.setArray(this.nodoarray);
 			   while( hijoActual1.TieneHermano() ){
 			   	
 			   	hijoActual1 = (NodoVar)hijoActual1.getHermanoDerecha();
 			   	hijoActual1.setType_var(tipo);
 			   
 			   } 
+			   this.nodoarray = null;
 			   NodoBase hijoActual = var_dec_p;
 				if(hijoActual !=null){
+					
 					while(hijoActual.TieneHermano()){
 						hijoActual = hijoActual.getHermanoDerecha();
 					}
@@ -233,13 +237,11 @@ var_dec_p ::= var_dec_p:var_dec_p SEMI
 				 NodoVar hijoActual1 = var_dec;
 			   	hijoActual1.setType_var(tipo);
 			   	while( hijoActual1.TieneHermano() ){
-			   	
+			   		
 			   		hijoActual1 = (NodoVar)hijoActual1.getHermanoDerecha();
-			   		hijoActual1.setType_var(tipo);
+			   		hijoActual1.setType_var(tipo);			   					   	
 			   
-			   	} 
-			   	
-			   	nodoarray = null;
+			   	} 		   	   	
 			   
 			   RESULT = (NodoBase)var_dec;
 			:} 
@@ -330,10 +332,13 @@ lista_declaraciones ::= declaraciones:dec
 var_dec	::= var_dec:var_dec COMMA dec:dec 
 			{:
 				if (debug) System.out.println("\t regla 4.2");
-				NodoBase hijoActual = var_dec;
+				NodoVar hijoActual = var_dec;
 					if(hijoActual !=null){   
 						while(hijoActual.TieneHermano()){
-							hijoActual = hijoActual.getHermanoDerecha();			
+							hijoActual = (NodoVar) hijoActual.getHermanoDerecha();	
+							if(this.nodoarray != null){
+								((NodoVar) hijoActual).setArray(this.nodoarray);
+							}
 						}
 						hijoActual.setHermanoDerecha(dec);
 						RESULT = var_dec;
@@ -345,30 +350,28 @@ var_dec	::= var_dec:var_dec COMMA dec:dec
 			dec:dec 
 			{:
 				if (debug) System.out.println("\t regla 4.1"); 
-				RESULT = (NodoVar)dec;
+				if(this.nodoarray != null){
+					System.out.println("llego el nodo array");
+					NodoVar var = (NodoVar)dec;
+					var.setArray(this.nodoarray);
+					RESULT = var;
+				} else {
+					RESULT = (NodoVar)dec;
+				}
 				
 			:}			
 			;
 			
 dec 	::= dec:dec COL type:type 
 			{:
-				if (debug) System.out.println("\t regla 5.2");
-				NodoVar hijoActual = (NodoVar)dec;				
-					if(hijoActual !=null){
-						while(hijoActual.TieneHermano()){
-							hijoActual = (NodoVar) hijoActual.getHermanoDerecha();
-						}
-						hijoActual.setHermanoDerecha(type);
-						RESULT = (NodoVar)dec;
-					}else{
-						RESULT = type;
-					}
+				
+				RESULT = (NodoVar)dec;
+
 			:}
 			| 
 			ID:nombre 
 			{:
-				//if (debug) System.out.println("\t nombre de variable: "+fact);
-				//ojo aqui con el
+				if (debug) System.out.println("\t nombre de variable: "+nombre);
 				
 				RESULT = new NodoVar(nombre,"");
 
@@ -426,8 +429,8 @@ simp_type ::= INTEGER
 ind_range ::= NUM:ni DOT DOT NUM:nd 
 				{:
 					if (debug) System.out.println("Array entre"+ni+" "+nd);
-					nodoarray = new NodoArray(Integer.parseInt(ni),Integer.parseInt(nd));					
-					RESULT = new NodoArray(Integer.parseInt(ni),Integer.parseInt(nd));
+					this.nodoarray = new NodoArray(Integer.parseInt(ni),Integer.parseInt(nd));					
+					RESULT = this.nodoarray;
 					
 				:}
 				;		
