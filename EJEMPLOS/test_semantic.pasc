@@ -1,7 +1,9 @@
 Program test;
 Var
-
+	a: Integer;
 	r: Array [1..3] of Integer;
+		a: Integer;
+
 	
 begin
 

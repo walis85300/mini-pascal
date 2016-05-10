@@ -201,7 +201,7 @@ var_p ::= VAR var_dec_p:var_dec_p
 var_dec_p ::= var_dec_p:var_dec_p SEMI  
 			{: 
 				if (debug) System.out.println("\t declara variable regla 3.1"); 
-				
+				 this.nodoarray = null;
 				RESULT = var_dec_p;
 			:}
 			| var_dec_p:var_dec_p SEMI  var_dec:var_dec   
@@ -229,6 +229,7 @@ var_dec_p ::= var_dec_p:var_dec_p SEMI
 					}else{
 						RESULT = var_dec;
 				}
+				 this.nodoarray = null;
 			:}
 			| var_dec:var_dec 
 			{: 
@@ -344,6 +345,7 @@ var_dec	::= var_dec:var_dec COMMA dec:dec
 						}
 						hijoActual.setHermanoDerecha(dec);
 						RESULT = var_dec;
+						 this.nodoarray = null;
 					}else{
 						RESULT = (NodoVar)dec;
 					}
