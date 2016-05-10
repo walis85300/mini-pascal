@@ -334,6 +334,8 @@ var_dec	::= var_dec:var_dec COMMA dec:dec
 				if (debug) System.out.println("\t regla 4.2");
 				NodoVar hijoActual = var_dec;
 					if(hijoActual !=null){   
+						if (this.nodoarray != null)
+			   				hijoActual.setArray(this.nodoarray);
 						while(hijoActual.TieneHermano()){
 							hijoActual = (NodoVar) hijoActual.getHermanoDerecha();	
 							if(this.nodoarray != null){

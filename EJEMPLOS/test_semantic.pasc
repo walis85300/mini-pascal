@@ -1,8 +1,6 @@
 Program test;
 Var
-	b: Boolean;
-	lfgf,lhjh, ugfg, uoi: Array [1..3] of Boolean;
-	i,j,k,l: Integer;
+
 	r: Array [1..3] of Integer;
 	
 begin
