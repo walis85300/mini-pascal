@@ -7,7 +7,7 @@ Var
 	i,j: Integer;
 	b: Boolean;
 	h,i: Integer;
-	g: Array [1..4] of Integer;
+	g, h, d, t, s: Array [1..4] of Integer;
 
 begin
 	
