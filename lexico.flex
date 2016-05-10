@@ -189,5 +189,5 @@ espacio		= [ \t]+
 			}
 {nuevalinea}       {lineanum++;}
 {espacio}    { /* saltos espacios en blanco*/}
-("{"([^{]|[\r\n]|("{"+([^}]*|[\r\n])))*"}"+)  { /* salto comentarios */ if(debug) System.out.println("token COMENTARIO"); }
+"{"[^}]+"}"  { /* salto comentarios */ if(debug) System.out.println("token COMENTARIO"); }
 .               {System.err.println("Caracter Ilegal encontrado en analisis lexico: " + yytext() + "\n");}
