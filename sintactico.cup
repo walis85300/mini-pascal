@@ -365,7 +365,14 @@ var_dec	::= var_dec:var_dec COMMA dec:dec
 dec 	::= dec:dec COL type:type 
 			{:
 				
-				RESULT = (NodoVar)dec;
+				if(this.nodoarray != null){
+					System.out.println("llego el nodo array");
+					NodoVar var = (NodoVar)dec;
+					var.setArray(this.nodoarray);
+					RESULT = var;
+				} else {
+					RESULT = (NodoVar)dec;
+				}
 
 			:}
 			| 
