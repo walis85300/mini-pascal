@@ -4,9 +4,10 @@ Program test;
 		del compilador de mini pascal
 }
 Var
-
+	i,j: Integer;
+	b: Boolean;
+	h,i: Integer;
 	g, h, d, t, s: Array [1..4] of Integer;
-	o: Integer;
 
 begin
 	

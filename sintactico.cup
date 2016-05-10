@@ -480,6 +480,14 @@ declaraciones   ::= if_stmt:sif
             		if(debug) System.out.println("\t regla 3e"); 
             		RESULT = sesc;
 				:}
+				|ID:nom LPAREN RPAREN SEMI
+				{:
+					RESULT = new NodoCallFuncion(nom);
+				:}
+				|ID:nom LPAREN args_stmt:args RPAREN SEMI
+				{:
+					RESULT = new NodoCallFuncion(nom, args, 0);
+				:}
 				|RETURN exp:ex SEMI
 				{:
 					RESULT = new NodoReturn(ex);
@@ -628,14 +636,34 @@ exp_logica ::= simple_exp:exI LT simple_exp:exD	{: if(debug) System.out.println(
 			:}
 		;
 		 
-args_stmt ::= exp COMMA args_stmt 
+args_stmt ::= exp:ex COMMA args_stmt:args 
 			{:
 				if (debug) System.out.println("\t argumentos");
+				NodoBase hijoActual = ex;
+				
+				if (hijoActual != null) {
+				
+					while(hijoActual.TieneHermano()){
+					
+						hijoActual = hijoActual.getHermanoDerecha();
+					
+					}
+					
+					hijoActual.setHermanoDerecha(args);
+					RESULT = ex;
+				
+				} else {
+				
+					RESULT = args;
+				
+				}
 			:}
 			|
-			exp 
+			exp:ex
 			{:
 				if (debug) System.out.println("\t argumento");
+				
+				RESULT = ex;
 			:}
 			;
 
@@ -708,10 +736,14 @@ factor      ::= LPAREN exp:ex RPAREN
 		| ID:nom LPAREN RPAREN 
 				{: 
 					if (debug) System.out.println("\t regla 12e"); 
+					
+					RESULT = new NodoCallFuncion(nom);
 				:}
-		| ID:nom LPAREN args_stmt RPAREN 
+		| ID:nom LPAREN args_stmt:args RPAREN 
 				{: 
 					if (debug) System.out.println("\t regla 12f"); 
+					
+					RESULT = new NodoCallFuncion(nom, args, 0);
 				:}
 		;					
 				
