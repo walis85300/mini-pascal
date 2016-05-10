@@ -1,13 +1,15 @@
 Program test;
+{
+	Programa de prueba 
+		del compilador de mini pascal
+}
 Var
-	a: Integer;
-	r: Array [1..3] of Integer;
-		a: Integer;
 
-	
+	g, h, d, t, s: Array [1..4] of Integer;
+	o: Integer;
+
 begin
-
-	write(0);
-
+	
+	g(a, b, f(), s);
 
 end;
