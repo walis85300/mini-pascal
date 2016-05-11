@@ -117,7 +117,13 @@ espacio		= [ \t]+
 			}	
 "do"		{ if (debug) System.out.println("token DO");
 			return sf.newSymbol("DO", sym.DO);
-			}			
+			}	
+"true"		{ if (debug) System.out.println("token TRUE");
+			return sf.newSymbol("TRUE", sym.TRUE);
+			}
+"false"		{ if (debug) System.out.println("token FALSE");
+			return sf.newSymbol("FALSE", sym.FALSE);
+			}								
 ":="            {	if(debug) System.out.println("token ASSIGN");
 			return sf.newSymbol("ASSIGN",sym.ASSIGN);
 			}
