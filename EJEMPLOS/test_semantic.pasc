@@ -1,16 +1,19 @@
-Program test;
+Program jsrehrdhfgdfsgsfdfghfghgfh;
 {
 	Programa de prueba 
 		del compilador de mini pascal
 }
+
 Var
-	i,j: Integer;
+	y: Integer;
 	b: Boolean;
-	h,i: Integer;
-	g, h, d, t, s: Array [1..4] of Integer;
+	y: Integer;
 
 begin
 	
-	g(a, b, f(), s);
+	if (y) then
+		read(holis);
+	end; 
+	write(y);
 
 end;

@@ -15,9 +15,9 @@ public class Util {
 		    else if (raiz instanceof  NodoVar)
 		    	System.out.println("Var");
 		    
-		    else if (raiz instanceof  NodoIf)
+		    else if (raiz instanceof  NodoIf){
 		    	System.out.println("If");
-		    
+		    }
 		    else if (raiz instanceof  NodoRepeat)
 		    	System.out.println("Repeat");
 		    

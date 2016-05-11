@@ -29,14 +29,14 @@ import ast.NodoValor;
 
 
 public class TablaSimbolos {
-	private HashMap<String, RegistroSimbolo> tabla;
+	private HashMap <String, RegistroSimbolo> tabla;
 	private int direccion;  //Contador de las localidades de memoria asignadas a la tabla
 	String tipoVar;
 	public boolean error = false;
 	
 	public TablaSimbolos() {
 		super();
-		tabla = new HashMap<String, RegistroSimbolo>();
+		tabla = new HashMap <String, RegistroSimbolo>();
 		direccion=0;
 	}
 
@@ -157,6 +157,14 @@ public class TablaSimbolos {
 	public RegistroSimbolo BuscarSimbolo(String identificador){
 		RegistroSimbolo simbolo=(RegistroSimbolo)tabla.get(identificador);
 		return simbolo;
+	}
+	
+	public boolean BuscarVariable(String identificador){
+		if(tabla.containsKey(identificador)){
+			return true;
+		}else{
+			return false;			
+		}
 	}
 	
 	public void ImprimirClaves(){
