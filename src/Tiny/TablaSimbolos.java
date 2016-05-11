@@ -43,7 +43,7 @@ public class TablaSimbolos {
 	public void cargarTabla(NodoBase raiz){
 		while (raiz != null) {
 	    if (raiz instanceof NodoIdentificador){
-	    	InsertarSimbolo(((NodoIdentificador)raiz).getNombre(),-1);
+	    	InsertarSimbolo(((NodoIdentificador)raiz).getNombre(),-1,tipoVar);
 	    	//TODO: Añadir el numero de linea y localidad de memoria correcta
 	    }
 
@@ -60,13 +60,13 @@ public class TablaSimbolos {
 	    	cargarTabla(((NodoRepeat)raiz).getPrueba());
 	    }
 	    else if (raiz instanceof  NodoAsignacion){
-	    	InsertarSimbolo(((NodoAsignacion)raiz).getIdentificador(),-1);
+	    	InsertarSimbolo(((NodoAsignacion)raiz).getIdentificador(),-1,tipoVar);
 	    	cargarTabla(((NodoAsignacion)raiz).getExpresion());
 	    }
 	    else if (raiz instanceof  NodoEscribir)
 	    	cargarTabla(((NodoEscribir)raiz).getExpresion());
 	    else if (raiz instanceof  NodoLeer)
-	    	InsertarSimbolo(((NodoLeer)raiz).getIdentificador(),-1);
+	    	InsertarSimbolo(((NodoLeer)raiz).getIdentificador(),-1,tipoVar);
 	    else if (raiz instanceof NodoOperacion){
 	    	cargarTabla(((NodoOperacion)raiz).getOpIzquierdo());
 	    	cargarTabla(((NodoOperacion)raiz).getOpDerecho());
@@ -80,11 +80,11 @@ public class TablaSimbolos {
 	    	cargarTabla(((NodoBegin)raiz).getBody_begin());
 	    }
 	    else if (raiz instanceof NodoCallProcedure){
-	    	InsertarSimbolo(((NodoCallFuncion)raiz).getName_function(),-1);
+	    	InsertarSimbolo(((NodoCallFuncion)raiz).getName_function(),-1,tipoVar);
 	    	cargarTabla(((NodoCallProcedure)raiz).getArgs());
 	    }
 	    else if (raiz instanceof NodoCallFuncion){
-	    	InsertarSimbolo(((NodoCallFuncion)raiz).getName_function(),-1);
+	    	InsertarSimbolo(((NodoCallFuncion)raiz).getName_function(),-1,tipoVar);
 	    	if(((NodoCallFuncion)raiz).getArgs() != null){
 	    		cargarTabla(((NodoFuncion)raiz).getArgs());
 	    	}
@@ -97,7 +97,7 @@ public class TablaSimbolos {
 	    }
 	    else if (raiz instanceof NodoProgram){
 	    	if(((NodoProgram)raiz).getName_program()!=null){
-	    		InsertarSimbolo(((NodoProgram)raiz).getName_program(),-1);
+	    		InsertarSimbolo(((NodoProgram)raiz).getName_program(),-1,null);
 	    	}
 	    	cargarTabla(((NodoProgram)raiz).getBody_program());
 	    }
@@ -107,12 +107,12 @@ public class TablaSimbolos {
 	    else if (raiz instanceof NodoMain){
 	    	if(((NodoMain)raiz).getVars()!=null)
 	    		cargarTabla(((NodoMain)raiz).getVars());
-	    	if(((NodoMain)raiz).getBody()!=null)
-	    		cargarTabla(((NodoMain)raiz).getBody());
 	    	if(((NodoMain)raiz).getProcedure()!=null)
 	    		cargarTabla(((NodoMain)raiz).getProcedure());
 	    	if(((NodoMain)raiz).getFunctions()!=null)
 	    		cargarTabla(((NodoMain)raiz).getFunctions());
+	    	if(((NodoMain)raiz).getBody()!=null)
+	    		cargarTabla(((NodoMain)raiz).getBody());
 	    }
 	    else if(raiz instanceof NodoVar){
 	    	if(((NodoVar)raiz).TieneHermano()){
@@ -120,13 +120,22 @@ public class TablaSimbolos {
 	    			System.out.println("Error sintactico: Variable ya definida");
 	    		}
 	    		else{
-	    			if(!InsertarSimbolo(((NodoVar)raiz).getName_var(),-1))
+	    			if(!InsertarSimbolo(((NodoVar)raiz).getName_var(),-1,((NodoVar)raiz).getType_var()))
 	    				cargarTabla(((NodoVar)raiz).getHermanoDerecha());
 	    		}
 	    	}
 	    	else
-	    		InsertarSimbolo(((NodoVar)raiz).getName_var(),-1);
-
+	    		InsertarSimbolo(((NodoVar)raiz).getName_var(),-1,((NodoVar)raiz).getType_var());
+	    }
+	    else if (raiz instanceof NodoFuncion){
+	    	InsertarSimbolo(((NodoFuncion)raiz).getName_function(),-1,((NodoFuncion)raiz).getType_function());
+	    	if(((NodoFuncion)raiz).getArgs()!=null)
+	    		cargarTabla(((NodoFuncion)raiz).getArgs());
+	    	cargarTabla(((NodoFuncion)raiz).getBody_function());
+	    }
+	    else if (raiz instanceof NodoCallFuncion){
+	    	if(((NodoFuncion)raiz).getArgs()!=null)
+	    		cargarTabla(((NodoFuncion)raiz).getArgs());
 	    }
 
 	    raiz = raiz.getHermanoDerecha();
@@ -134,12 +143,12 @@ public class TablaSimbolos {
 	}
 	
 	//true es nuevo no existe se insertara, false ya existe NO se vuelve a insertar 
-	public boolean InsertarSimbolo(String identificador, int numLinea){
+	public boolean InsertarSimbolo(String identificador, int numLinea, String tipo){
 		RegistroSimbolo simbolo;
 		if(tabla.containsKey(identificador)){
 			return false;
 		}else{
-			simbolo= new RegistroSimbolo(identificador,numLinea,direccion++);
+			simbolo= new RegistroSimbolo(identificador,numLinea,direccion++,tipo);
 			tabla.put(identificador,simbolo);
 			return true;			
 		}
