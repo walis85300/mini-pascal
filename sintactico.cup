@@ -20,7 +20,7 @@ Mas informacion en: http//4thmouse.com/index.php/2007/02/15/using-custom-symbols
 			parser_obj=new parser(new Scanner(new java.io.FileInputStream(args[0]),sf),sf);
 
 		parser_obj.parse();
-		/*NodoBase root=parser_obj.action_obj.getASTroot();
+		NodoBase root=parser_obj.action_obj.getASTroot();
 		System.out.println();
 		System.out.println("IMPRESION DEL AST GENERADO");
 		System.out.println();
@@ -29,7 +29,7 @@ Mas informacion en: http//4thmouse.com/index.php/2007/02/15/using-custom-symbols
 		ts.cargarTabla(root);
 		ts.ImprimirClaves();
 		Tiny.Generador.setTablaSimbolos(ts);
-		Tiny.Generador.generarCodigoObjeto(root);*/
+		/*Tiny.Generador.generarCodigoObjeto(root);*/
 	}
 
 :}
@@ -486,7 +486,7 @@ declaraciones   ::= if_stmt:sif
 				:}
 				|ID:nom LPAREN args_stmt:args RPAREN SEMI
 				{:
-					RESULT = new NodoCallFuncion(nom, args, 0);
+					RESULT = new NodoCallFuncion(nom, args);
 				:}
 				|RETURN exp:ex SEMI
 				{:
@@ -743,7 +743,7 @@ factor      ::= LPAREN exp:ex RPAREN
 				{: 
 					if (debug) System.out.println("\t regla 12f"); 
 					
-					RESULT = new NodoCallFuncion(nom, args, 0);
+					RESULT = new NodoCallFuncion(nom, args);
 				:}
 		;					
 				
