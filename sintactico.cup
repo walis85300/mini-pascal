@@ -579,7 +579,7 @@ write_stmt  ::= WRITE term:ex
 			:}
 		;
 		
-exp ::= exp OR exp_and:ex 
+exp ::= exp:exI OR exp_and:exD 
 			{:
 				if (debug) System.out.println("\t regla 9a con or"); 
 				RESULT = new NodoOperacion(exI, tipoOp.or, exD);
@@ -593,7 +593,7 @@ exp ::= exp OR exp_and:ex
 			:}
 		;
 		
-exp_and ::= exp_and AND	exp_logica 
+exp_and ::= exp_and:exI AND	exp_logica:exD 
 		{: 
 			if (debug) System.out.println("\t regla 9b con and");
 			
