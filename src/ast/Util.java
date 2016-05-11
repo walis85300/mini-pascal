@@ -9,8 +9,15 @@ public class Util {
 		  sangria+=2;
 		  while (raiz != null) {
 		    printSpaces();
-		    if (raiz instanceof  NodoIf)
+		    if (raiz instanceof  NodoProgram)
+		    	System.out.println("Program");
+		    
+		    else if (raiz instanceof  NodoVar)
+		    	System.out.println("Var");
+		    
+		    else if (raiz instanceof  NodoIf)
 		    	System.out.println("If");
+		    
 		    else if (raiz instanceof  NodoRepeat)
 		    	System.out.println("Repeat");
 		    
@@ -62,6 +69,33 @@ public class Util {
 		    	printSpaces();
 		    	System.out.println("**Expr Derecha Operacion**");		    	
 		    	imprimirAST(((NodoOperacion)raiz).getOpDerecho());
+		    }
+		    
+		    else if (raiz instanceof NodoProgram){
+		    	printSpaces();
+	    		System.out.println("Cuerpo del programa");
+	    		imprimirAST(((NodoProgram)raiz).getBody_program());
+		    }
+		    else if (raiz instanceof NodoMain){
+		    	printSpaces();
+		    	if(((NodoMain)raiz).getVars()!=null){
+		    		printSpaces();
+		    		System.out.println("Bloque de variables");
+		    		imprimirAST(((NodoMain)raiz).getVars());
+		    	}
+		    	if(((NodoMain)raiz).getFunctions()!=null){
+		    		printSpaces();
+		    		System.out.println("Bloque de Funciones");
+		    		imprimirAST(((NodoMain)raiz).getFunctions());
+		    	}
+		    	if(((NodoMain)raiz).getProcedure()!=null){
+		    		printSpaces();
+		    		System.out.println("Bloque de Procedimientos");
+		    		imprimirAST(((NodoMain)raiz).getProcedure());
+		    	}
+		    	printSpaces();
+		    	System.out.println("MAIN");
+		    	imprimirAST(((NodoMain)raiz).getBody());
 		    }
 		    raiz = raiz.getHermanoDerecha();
 		  }

@@ -12,13 +12,27 @@ import ast.NodoIf;
 import ast.NodoOperacion;
 import ast.NodoRepeat;
 import ast.NodoWhile;
-import ast.NodoDoWhile;
 import ast.NodoLeer;
+import ast.NodoFor;
+import ast.NodoBegin;
+import ast.NodoCallFuncion;
+import ast.NodoCallProcedure;
+import ast.NodoFuncion;
+import ast.NodoMain;
+import ast.NodoProcedure;
+import ast.NodoProgram;
+import ast.NodoRepeat;
+import ast.NodoVar;
+import ast.NodoValor;
+
+
 
 
 public class TablaSimbolos {
 	private HashMap<String, RegistroSimbolo> tabla;
 	private int direccion;  //Contador de las localidades de memoria asignadas a la tabla
+	String tipoVar;
+	public boolean error = false;
 	
 	public TablaSimbolos() {
 		super();
@@ -45,8 +59,7 @@ public class TablaSimbolos {
 	    	cargarTabla(((NodoRepeat)raiz).getCuerpo());
 	    	cargarTabla(((NodoRepeat)raiz).getPrueba());
 	    }
-	    else if (raiz instanceof  NodoAsignacion)
-	    {
+	    else if (raiz instanceof  NodoAsignacion){
 	    	InsertarSimbolo(((NodoAsignacion)raiz).getIdentificador(),-1);
 	    	cargarTabla(((NodoAsignacion)raiz).getExpresion());
 	    }
@@ -63,10 +76,57 @@ public class TablaSimbolos {
 	    	cargarTabla(((NodoWhile)raiz).getPrueba());
 	    	cargarTabla(((NodoWhile)raiz).getCuerpo());
 	    }
-	    else if (raiz instanceof  NodoDoWhile)
-	    {
-	    	cargarTabla(((NodoDoWhile)raiz).getCuerpo());
-	    	cargarTabla(((NodoDoWhile)raiz).getPrueba());
+	    else if (raiz instanceof NodoBegin){
+	    	cargarTabla(((NodoBegin)raiz).getBody_begin());
+	    }
+	    else if (raiz instanceof NodoCallProcedure){
+	    	InsertarSimbolo(((NodoCallFuncion)raiz).getName_function(),-1);
+	    	cargarTabla(((NodoCallProcedure)raiz).getArgs());
+	    }
+	    else if (raiz instanceof NodoCallFuncion){
+	    	InsertarSimbolo(((NodoCallFuncion)raiz).getName_function(),-1);
+	    	if(((NodoCallFuncion)raiz).getArgs() != null){
+	    		cargarTabla(((NodoFuncion)raiz).getArgs());
+	    	}
+	    	cargarTabla(((NodoCallProcedure)raiz).getArgs());
+	    }
+	    else if (raiz instanceof NodoFor){
+	    	cargarTabla(((NodoFor)raiz).getVariable());
+	    	cargarTabla(((NodoFor)raiz).getValorFinal());
+	    	cargarTabla(((NodoFor)raiz).getCuerpo());
+	    }
+	    else if (raiz instanceof NodoProgram){
+	    	if(((NodoProgram)raiz).getName_program()!=null){
+	    		InsertarSimbolo(((NodoProgram)raiz).getName_program(),-1);
+	    	}
+	    	cargarTabla(((NodoProgram)raiz).getBody_program());
+	    }
+	    else if (raiz instanceof NodoBegin){
+	    	cargarTabla(((NodoBegin)raiz).getBody_begin());
+	    }
+	    else if (raiz instanceof NodoMain){
+	    	if(((NodoMain)raiz).getVars()!=null)
+	    		cargarTabla(((NodoMain)raiz).getVars());
+	    	if(((NodoMain)raiz).getBody()!=null)
+	    		cargarTabla(((NodoMain)raiz).getBody());
+	    	if(((NodoMain)raiz).getProcedure()!=null)
+	    		cargarTabla(((NodoMain)raiz).getProcedure());
+	    	if(((NodoMain)raiz).getFunctions()!=null)
+	    		cargarTabla(((NodoMain)raiz).getFunctions());
+	    }
+	    else if(raiz instanceof NodoVar){
+	    	if(((NodoVar)raiz).TieneHermano()){
+	    		if( tabla.containsKey(((NodoVar)raiz).getName_var()) ){
+	    			System.out.println("Error sintactico: Variable ya definida");
+	    		}
+	    		else{
+	    			if(!InsertarSimbolo(((NodoVar)raiz).getName_var(),-1))
+	    				cargarTabla(((NodoVar)raiz).getHermanoDerecha());
+	    		}
+	    	}
+	    	else
+	    		InsertarSimbolo(((NodoVar)raiz).getName_var(),-1);
+
 	    }
 
 	    raiz = raiz.getHermanoDerecha();
@@ -101,7 +161,9 @@ public class TablaSimbolos {
 	public int getDireccion(String Clave){
 		return BuscarSimbolo(Clave).getDireccionMemoria();
 	}
-	
+	public boolean getError(){
+		return error;
+	}
 	/*
 	 * TODO:
 	 * 1. Crear lista con las lineas de codigo donde la variable es usada.
