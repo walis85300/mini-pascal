@@ -1,17 +1,17 @@
 package ast;
 
 public enum tipoOp {
-	menor,
-	mayor,
-	igual,
-	diferente,
-	negacion,
-	mas,
-	menos,
-	por,
-	entre,
-	menor_igual,
-	mayor_igual,
-	and,
-	or;
+mas,
+menos,
+por,
+entre,
+menor,
+menor_igual,
+mayor,
+mayor_igual,
+igual,
+diferente,
+negacion,
+and,
+or;
 }
