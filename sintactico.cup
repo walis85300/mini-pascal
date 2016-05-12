@@ -100,6 +100,8 @@ terminal FUNCTION;
 terminal TO;
 terminal PROCEDURE;
 terminal RETURN;
+terminal TRUE;
+terminal FALSE;
 
 /* Simbolos No Terminales */
 non terminal program;
@@ -747,6 +749,17 @@ factor      ::= LPAREN exp:ex RPAREN
 							RESULT = null;
 							System.out.println("\t ERROR en cup ");
 						}
+					
+				:}
+		| TRUE
+				{:
+					if (debug) System.out.println("\t regla 12g");								
+						RESULT = new NodoValor(1,1);
+				:}
+		| FALSE 
+				{:
+					if (debug) System.out.println("\t regla 12h");
+						RESULT = new NodoValor(0,1);
 					
 				:}
 		| ID:variable	
