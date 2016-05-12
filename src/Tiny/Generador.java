@@ -59,7 +59,21 @@ public class Generador {
 	//prerequisito: Fijar la tabla de simbolos antes de generar el codigo objeto 
 	private static void generar(NodoBase nodo){
 	if(tablaSimbolos!=null){
-		if (nodo instanceof  NodoIf){
+		if (nodo instanceof  NodoProgram){
+			generarProgram(nodo);
+		}else if (nodo instanceof  NodoMain){
+			//if(((NodoMain)nodo).getVars() != null)
+				//generar(((NodoMain)nodo).getVars());
+			//if(((NodoMain)nodo).getFunctions() != null)
+				//generar(((NodoMain)nodo).getFunctions());
+			//if(((NodoMain)nodo).getProcedure() != null)
+				//generar(((NodoMain)nodo).getProcedure());
+			
+			generarCuerpo(nodo);
+		}else if (nodo instanceof  NodoBegin){
+			generarBegin(nodo);
+		}else if (nodo instanceof  NodoVar){
+		}else if (nodo instanceof  NodoIf){
 			generarIf(nodo);
 		}else if (nodo instanceof  NodoRepeat){
 			generarRepeat(nodo);
@@ -88,7 +102,15 @@ public class Generador {
 	}else
 		System.out.println("¡¡¡ERROR: por favor fije la tabla de simbolos a usar antes de generar codigo objeto!!!");
 }
-
+	private static void generarProgram(NodoBase nodo){
+		generar(((NodoProgram)nodo).getBody_program());
+	}
+	private static void generarCuerpo(NodoBase nodo){
+		generar(((NodoMain)nodo).getBody());
+	}
+	private static void generarBegin(NodoBase nodo){
+		generar(((NodoBegin)nodo).getBody_begin());
+	}
 	private static void generarIf(NodoBase nodo){
     	NodoIf n = (NodoIf)nodo;
 		int localidadSaltoElse,localidadSaltoEnd,localidadActual;

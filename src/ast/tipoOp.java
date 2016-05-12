@@ -12,7 +12,6 @@ public enum tipoOp {
 	entre,
 	menor_igual,
 	mayor_igual,
-	no_igual,
 	and,
 	or;
 }

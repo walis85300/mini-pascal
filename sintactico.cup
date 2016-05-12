@@ -481,6 +481,7 @@ declaraciones   ::= if_stmt:sif
             	| read_stmt:slec SEMI	
             	{: 
             		if(debug) System.out.println("\t regla 3d"); 
+            		RESULT = slec;
 				:}
             	| write_stmt:sesc SEMI	
             	{:
@@ -524,7 +525,7 @@ if_stmt     ::= IF exp:ex THEN lista:pthen END SEMI
 				:}
 				;
 
-repeat_stmt ::= REPEAT lista:cuerpo UNTIL exp:prueba	
+repeat_stmt ::= REPEAT lista:cuerpo UNTIL exp:prueba SEMI
 			{: 
 				if(debug) System.out.println("\t regla 5");
 				RESULT = new NodoRepeat(cuerpo,prueba); 
@@ -572,9 +573,10 @@ assign_stmt ::= ID:variable
 			:}
 			;
 
-read_stmt   ::= READ exp 
+read_stmt   ::= READ LPAREN ID:nom RPAREN 
 			{: if(debug) System.out.println("\t regla 7"); 
 				System.out.println("Leyendo Variable");
+				RESULT = new NodoLeer(nom);
 			:}
 			;
 

@@ -23,5 +23,9 @@ public class NodoValor extends NodoBase {
 	public int getValor() {
 		return valor;
 	}
+	
+	public int getTipo(){
+		return this.tipo;
+	}
 
 }

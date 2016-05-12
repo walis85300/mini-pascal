@@ -26,8 +26,6 @@ import ast.NodoVar;
 import ast.NodoValor;
 
 
-
-
 public class TablaSimbolos {
 	private HashMap <String, RegistroSimbolo> tabla;
 	private int direccion;  //Contador de las localidades de memoria asignadas a la tabla
@@ -65,8 +63,6 @@ public class TablaSimbolos {
 	    }
 	    else if (raiz instanceof  NodoEscribir)
 	    	cargarTabla(((NodoEscribir)raiz).getExpresion());
-	    else if (raiz instanceof  NodoLeer)
-	    	InsertarSimbolo(((NodoLeer)raiz).getIdentificador(),-1,tipoVar);
 	    else if (raiz instanceof NodoOperacion){
 	    	cargarTabla(((NodoOperacion)raiz).getOpIzquierdo());
 	    	cargarTabla(((NodoOperacion)raiz).getOpDerecho());
@@ -165,6 +161,11 @@ public class TablaSimbolos {
 		}else{
 			return false;			
 		}
+	}
+	
+	public String getTipo(String identificador) {
+		RegistroSimbolo simbolo = this.tabla.get(identificador);
+		return simbolo.getTipo();
 	}
 	
 	public void ImprimirClaves(){
