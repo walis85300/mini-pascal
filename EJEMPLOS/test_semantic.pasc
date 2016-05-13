@@ -6,14 +6,17 @@ Program jsrehrdhfgdfsgsfdfghfghgfh;
 
 Var
 	y: Integer;
-	b: Boolean;
-	y: Integer;
+	
+function Integer pupu(variCualquiera: Integer)
+	begin
+		
+		salida := bolivares / 300;
+		write(dentroF);
+	end;	
+	
 
 begin
 	
-	if (y) then
-		read(holis);
-	end; 
 	write(y);
 
 end;

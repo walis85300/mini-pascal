@@ -70,8 +70,8 @@ public class Generador {
 		}else if (nodo instanceof  NodoMain){
 			//if(((NodoMain)nodo).getVars() != null)
 				//generar(((NodoMain)nodo).getVars());
-			//if(((NodoMain)nodo).getFunctions() != null)
-				//generar(((NodoMain)nodo).getFunctions());
+			if(((NodoMain)nodo).getFunctions() != null)
+				generar(((NodoMain)nodo).getFunctions());
 			if(((NodoMain)nodo).getProcedure() != null)
 				generar(((NodoMain)nodo).getProcedure());
 			
@@ -105,6 +105,10 @@ public class Generador {
 			generarIdentificador(nodo);
 		}else if (nodo instanceof NodoOperacion){
 			generarOperacion(nodo);
+		}else if (nodo instanceof NodoFuncion){
+			generarFuncion(nodo);
+		}else if (nodo instanceof NodoCallFuncion){
+			generarCallFuncion(nodo);	
 		}else{
 			System.out.println("BUG: Tipo de nodo a generar desconocido");
 		}
@@ -142,6 +146,35 @@ public class Generador {
 		if(UtGen.debug)	UtGen.emitirComentario("-> Procedure");
 		if(n.getBody_procedure()!= null)
 			generar(n.getBody_procedure());
+		//Salto incondicional a donde quede
+		//UtGen.emitirRM("LDA", UtGen.PC, 0,UtGen.NL, "Salto incodicional a donde fue llamada la funcion");
+	}
+	private static void generarFuncion(NodoBase nodo){
+		/*
+		 ultimoAmbito=((NodoFuncion)nodo).getNombre();
+		 int pos=UtGen.emitirSalto(0);
+		 tablaSimbolos.setiMem(ultimoAmbito,pos );
+		 */
+		NodoFuncion n = (NodoFuncion)nodo;
+		if(UtGen.debug)	UtGen.emitirComentario("-> Funcion");
+		if(n.getBody_function()!= null)
+			generar(n.getBody_function());
+		UtGen.debug = false;
+		//Salto incondicional a donde quede
+		//UtGen.emitirRM("LDA", UtGen.PC, 0,UtGen.NL, "Salto incodicional a donde fue llamada la funcion");
+	}
+	private static void generarCallFuncion(NodoBase nodo){
+		/*
+		 ultimoAmbito=((NodoFuncion)nodo).getNombre();
+		 int pos=UtGen.emitirSalto(0);
+		 tablaSimbolos.setiMem(ultimoAmbito,pos );
+		 */
+		tablaSimbolos.ImprimirClaves();
+		NodoCallFuncion n = (NodoCallFuncion)nodo;
+		if(UtGen.debug)	UtGen.emitirComentario("-> llamando Funcion");
+		if(n.getArgs()!= null)
+			generar(n.getArgs());
+		UtGen.debug = false;
 		//Salto incondicional a donde quede
 		//UtGen.emitirRM("LDA", UtGen.PC, 0,UtGen.NL, "Salto incodicional a donde fue llamada la funcion");
 	}
