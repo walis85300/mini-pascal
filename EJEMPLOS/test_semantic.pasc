@@ -4,18 +4,18 @@ Program jsrehrdhfgdfsgsfdfghfghgfh;
 		del compilador de mini pascal
 }
 
-Var
-	iu: Integer;
-	u: Array [1..3] of Integer;
-	yuiyu: Integer;
+	y: Integer;
+	
+function Integer pupu(variCualquiera: Integer)
+	begin
+		
+		salida := bolivares / 300;
+		write(dentroF);
+	end;	
 	
 
 begin
-	for iu:= 15 to 20 do
-	begin
-	
-		write(0);
-	
-	end;
+
+	pupu(y);
 
 end;
