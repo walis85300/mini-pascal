@@ -199,7 +199,38 @@ public class Generador {
 		UtGen.emitirRM_Abs("JNE", UtGen.AC, localidadInicioCiclo, "do while: jmp hacia el inicio");
 	}		
 
-	
+	private static void generarFor(NodoBase nodo){ 
+    	NodoFor n = (NodoFor)nodo;
+    	int localidadSaltoInicio,localidadFinal,localidadActual;
+    	/* Genero el codigo de la prueba del while */
+		if(UtGen.debug)	UtGen.emitirComentario("-> while");
+		generar(n.getVariable());
+		localidadSaltoInicio = UtGen.emitirSalto(0);
+		
+			generar(n.getCuerpo());
+			UtGen.emitirComentario("while: aqui deberia ir el marcado del inicio del while");
+			UtGen.emitirRM("LDC", UtGen.AC, 1, 0, "cargar constante: 1");
+			UtGen.emitirRM("LD", UtGen.AC1, ++desplazamientoTmp, UtGen.GP, "op: pop o cargo de la pila el valor izquierdo en AC1");
+			UtGen.emitirRO("ADD", UtGen.AC1, UtGen.AC1, UtGen.AC, "op: +");	
+			UtGen.emitirRM("ST", UtGen.AC1, 1, UtGen.GP, "leer: almaceno el valor entero leido en el id ");
+			generar(n.getValorFinal());
+			UtGen.emitirRO("SUB", UtGen.AC, UtGen.AC1, UtGen.AC, "op: ==");
+			UtGen.emitirRM("JEQ", UtGen.AC, 2, UtGen.PC, "voy dos instrucciones mas alla if verdadero (AC==0)");
+			UtGen.emitirRM("LDC", UtGen.AC, 1, UtGen.AC, "caso de falso (AC=0)");
+			UtGen.emitirRM("LDA", UtGen.PC, 1, UtGen.PC, "Salto incodicional a direccion: PC+1 (es falso evito colocarlo verdadero)");
+			UtGen.emitirRM("LDC", UtGen.AC, 0, UtGen.AC, "caso de verdadero (AC=1)");
+		localidadFinal = UtGen.emitirSalto(1);
+		//if(UtGen.debug)	UtGen.emitirComentario("-> cuerpo for");
+		/* Genero el cuerpo del for */
+		
+		//Salto al Inicio del for
+		UtGen.emitirRM_Abs("LDA", UtGen.PC, localidadSaltoInicio, "if: jmp hacia el final");
+		//Salto si el while es falso (0) salto al fin
+		localidadActual = UtGen.emitirSalto(0);
+		UtGen.cargarRespaldo(localidadFinal);
+		UtGen.emitirRM_Abs("JEQ", UtGen.AC, localidadActual, "if: jmp hacia fin del while si falso (0)");
+		UtGen.restaurarRespaldo();
+	}
 	
 	private static void generarAsignacion(NodoBase nodo){
 		NodoAsignacion n = (NodoAsignacion)nodo;
