@@ -33,6 +33,14 @@ public class NodoVar extends NodoBase{
 	public String getName_var() {
 		return name_var;
 	}
+	
+	public int getTamano() {
+		
+		if (this.arrayType != null)
+			return this.arrayType.getRIndex() - this.arrayType.getLIndex();
+		
+		return -1;
+	}
 
 	public void setName_var(String name_var) {
 		this.name_var = name_var;

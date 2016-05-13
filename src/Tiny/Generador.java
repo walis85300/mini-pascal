@@ -34,6 +34,8 @@ public class Generador {
 	 */
 	private static int desplazamientoTmp = 0;
 	private static TablaSimbolos tablaSimbolos = null;
+	private static int LineaMain;
+	private static boolean GenerarCuerpoMain = true;
 	
 	public static void setTablaSimbolos(TablaSimbolos tabla){
 		tablaSimbolos = tabla;
@@ -109,7 +111,16 @@ public class Generador {
 		generar(((NodoMain)nodo).getBody());
 	}
 	private static void generarBegin(NodoBase nodo){
-		generar(((NodoBegin)nodo).getBody_begin());
+		if(GenerarCuerpoMain){
+			int posicionAComenzar = UtGen.emitirSalto(0);
+			UtGen.cargarRespaldo(LineaMain);
+			UtGen.emitirRM("LDA", UtGen.PC, posicionAComenzar, UtGen.GP, "Salto incondicional al main del programa");
+			UtGen.restaurarRespaldo();
+			GenerarCuerpoMain = false;
+			generar(((NodoBegin)nodo).getBody_begin());
+		} else {
+			generar(((NodoBegin)nodo).getBody_begin());
+		}
 	}
 	private static void generarIf(NodoBase nodo){
     	NodoIf n = (NodoIf)nodo;
@@ -331,6 +342,11 @@ public class Generador {
 		UtGen.emitirComentario("Preludio estandar:");
 		UtGen.emitirRM("LD", UtGen.MP, 0, UtGen.AC, "cargar la maxima direccion desde la localidad 0");
 		UtGen.emitirRM("ST", UtGen.AC, 0, UtGen.AC, "limpio el registro de la localidad 0");
+		
+		/*	
+		 * Luego de generar el preludio guarda la linea para luego generar un salgo incondicional
+		 * hacia donde este declarado el main del programa*/
+		LineaMain = UtGen.emitirSalto(1);
 	}
 
 }

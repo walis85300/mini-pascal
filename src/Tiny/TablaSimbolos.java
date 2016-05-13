@@ -27,22 +27,36 @@ import ast.NodoValor;
 
 
 public class TablaSimbolos {
-	private HashMap <String, RegistroSimbolo> tabla;
+	/*
+	 * tabla que guarda los identificadores*/
+	private HashMap <String, RegistroSimbolo> tabla;	
+	/*
+	 * Contiene la linea inicial de la ejecucion del proc o func*/
+	private HashMap <String, Integer> tablaProcFunc;
+	/*
+	 * Tabla que me almacena el tipo de retorno de la funcion*/
+	private HashMap <String, String> tablaTipo;
 	private int direccion;  //Contador de las localidades de memoria asignadas a la tabla
 	String tipoVar;
 	public boolean error = false;
 	
+	/*
+	 * Me va a almacenar los argumentos que recibe un proc o func
+	 * */
+	private HashMap <String, ArrayList<String>> tablaDeArgumentos;
+	
 	public TablaSimbolos() {
 		super();
 		tabla = new HashMap <String, RegistroSimbolo>();
+		tablaProcFunc = new HashMap <String, Integer>();
 		direccion=0;
 	}
 
 	public void cargarTabla(NodoBase raiz){
 		while (raiz != null) {
 	    if (raiz instanceof NodoIdentificador){
-	    	InsertarSimbolo(((NodoIdentificador)raiz).getNombre(),-1,tipoVar);
-	    	//TODO: Añadir el numero de linea y localidad de memoria correcta
+	    	InsertarSimbolo(((NodoIdentificador)raiz).getNombre(),-1,tipoVar, -1);
+	    	//TODO: Aï¿½adir el numero de linea y localidad de memoria correcta
 	    }
 
 	    /* Hago el recorrido recursivo */
@@ -58,7 +72,7 @@ public class TablaSimbolos {
 	    	cargarTabla(((NodoRepeat)raiz).getPrueba());
 	    }
 	    else if (raiz instanceof  NodoAsignacion){
-	    	InsertarSimbolo(((NodoAsignacion)raiz).getIdentificador(),-1,tipoVar);
+	    	InsertarSimbolo(((NodoAsignacion)raiz).getIdentificador(),-1,tipoVar, -1);
 	    	cargarTabla(((NodoAsignacion)raiz).getExpresion());
 	    }
 	    else if (raiz instanceof  NodoEscribir)
@@ -76,11 +90,11 @@ public class TablaSimbolos {
 	    	cargarTabla(((NodoBegin)raiz).getBody_begin());
 	    }
 	    else if (raiz instanceof NodoCallProcedure){
-	    	InsertarSimbolo(((NodoCallFuncion)raiz).getName_function(),-1,tipoVar);
+	    	InsertarSimbolo(((NodoCallFuncion)raiz).getName_function(),-1,tipoVar, -1);
 	    	cargarTabla(((NodoCallProcedure)raiz).getArgs());
 	    }
 	    else if (raiz instanceof NodoCallFuncion){
-	    	InsertarSimbolo(((NodoCallFuncion)raiz).getName_function(),-1,tipoVar);
+	    	InsertarSimbolo(((NodoCallFuncion)raiz).getName_function(),-1,tipoVar, -1);
 	    	if(((NodoCallFuncion)raiz).getArgs() != null){
 	    		cargarTabla(((NodoFuncion)raiz).getArgs());
 	    	}
@@ -93,7 +107,7 @@ public class TablaSimbolos {
 	    }
 	    else if (raiz instanceof NodoProgram){
 	    	if(((NodoProgram)raiz).getName_program()!=null){
-	    		InsertarSimbolo(((NodoProgram)raiz).getName_program(),-1,null);
+	    		InsertarSimbolo(((NodoProgram)raiz).getName_program(),-1,null, -1);
 	    	}
 	    	cargarTabla(((NodoProgram)raiz).getBody_program());
 	    }
@@ -113,18 +127,20 @@ public class TablaSimbolos {
 	    else if(raiz instanceof NodoVar){
 	    	if(((NodoVar)raiz).TieneHermano()){
 	    		if( tabla.containsKey(((NodoVar)raiz).getName_var()) ){
-	    			System.out.println("Error sintactico: Variable ya definida");
+	    			System.out.println("Error semantico: Variable ya definida");
 	    		}
 	    		else{
-	    			if(!InsertarSimbolo(((NodoVar)raiz).getName_var(),-1,((NodoVar)raiz).getType_var()))
+	    			if(!InsertarSimbolo(((NodoVar)raiz).getName_var(),-1,((NodoVar)raiz).getType_var(),
+	    					((NodoVar)raiz).getTamano() ))
 	    				cargarTabla(((NodoVar)raiz).getHermanoDerecha());
 	    		}
 	    	}
 	    	else
-	    		InsertarSimbolo(((NodoVar)raiz).getName_var(),-1,((NodoVar)raiz).getType_var());
+	    		InsertarSimbolo(((NodoVar)raiz).getName_var(),-1,((NodoVar)raiz).getType_var(), 
+	    				((NodoVar)raiz).getTamano());
 	    }
 	    else if (raiz instanceof NodoFuncion){
-	    	InsertarSimbolo(((NodoFuncion)raiz).getName_function(),-1,((NodoFuncion)raiz).getType_function());
+	    	InsertarSimbolo(((NodoFuncion)raiz).getName_function(),-1,((NodoFuncion)raiz).getType_function(), -1);
 	    	if(((NodoFuncion)raiz).getArgs()!=null)
 	    		cargarTabla(((NodoFuncion)raiz).getArgs());
 	    	cargarTabla(((NodoFuncion)raiz).getBody_function());
@@ -139,14 +155,27 @@ public class TablaSimbolos {
 	}
 	
 	//true es nuevo no existe se insertara, false ya existe NO se vuelve a insertar 
-	public boolean InsertarSimbolo(String identificador, int numLinea, String tipo){
+	public boolean InsertarSimbolo(String identificador, int numLinea, String tipo, int tamano){
 		RegistroSimbolo simbolo;
+		boolean array = false;
 		if(tabla.containsKey(identificador)){
 			return false;
 		}else{
-			simbolo= new RegistroSimbolo(identificador,numLinea,direccion++,tipo);
-			tabla.put(identificador,simbolo);
-			return true;			
+			/*
+			 * Si el tamaÃ±o es != -1 significa que es un array*/
+			if (tamano != -1) 
+				array = true;
+			
+			simbolo= new RegistroSimbolo(identificador,numLinea,direccion++,tipo, array);
+			tabla.put(identificador,simbolo);					
+			
+			/*
+			 * Se apartan las direcciones de memoria suficientes para que todas las posiciones 
+			 * del array puedan ser indexadas*/
+			if (array)
+				direccion = direccion + tamano;
+			
+			return true;	
 		}
 	}
 	
@@ -181,6 +210,30 @@ public class TablaSimbolos {
 	}
 	public boolean getError(){
 		return error;
+	}
+	
+	public void setArgumentos(String nomProcFunc, ArrayList<String> args) {
+		tablaDeArgumentos.put(nomProcFunc, args);
+	}
+	
+	public ArrayList <String> getArgumentos(String nomProcFunc) {
+		return tablaDeArgumentos.get(nomProcFunc);
+	}
+	
+	public String getTipoFuncion(String nomFunc) {
+		return tablaTipo.get(nomFunc);
+	}
+	
+	public void setTipoFuncion(String nomFunc, String tipo) {
+		tablaTipo.put(nomFunc, tipo);
+	}
+	
+	public void setLineaProcFunc(String nomProcFunc, Integer linea) {
+		tablaProcFunc.put(nomProcFunc, linea);
+	}
+	
+	public Integer getLineaProcFunc(String nomProcFunc) {
+		return tablaProcFunc.get(nomProcFunc);
 	}
 	/*
 	 * TODO:

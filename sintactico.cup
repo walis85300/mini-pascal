@@ -139,6 +139,7 @@ non terminal NodoBase func_p;
 non terminal NodoBase exp_and;
 non terminal NodoBase exp_logica;
 non terminal NodoBase lista;
+non terminal NodoBase array;
 non terminal NodoBase proc_p;
 non terminal NodoBase proc_dec_p;
 non terminal String func_type;
@@ -571,12 +572,24 @@ assign_stmt ::= ID:variable
 				
 				}
 			:}
+			|
+			array:arr ASSIGN exp:ex
+			{:
+				RESULT = new NodoAsignacion(arr,ex);
+			:}
 			;
 
 read_stmt   ::= READ LPAREN ID:nom RPAREN 
 			{: if(debug) System.out.println("\t regla 7"); 
 				System.out.println("Leyendo Variable");
 				RESULT = new NodoLeer(nom);
+			:}
+			|
+			READ LPAREN  array:arr  RPAREN
+			{:
+				if (debug) System.out.println("\t regla 7.1");
+				System.out.println("Leyendo en una posicion del vector");
+				RESULT = new NodoLeer(arr);
 			:}
 			;
 
@@ -586,6 +599,7 @@ write_stmt  ::= WRITE term:ex
 				
 				RESULT = new NodoEscribir(ex); 
 			:}
+
 		;
 		
 exp ::= exp:exI OR exp_and:exD 
@@ -733,6 +747,13 @@ term        ::= term:exI TIMES factor:exD
 					RESULT = fact;
 				:}
 		;
+		
+array ::= ID:nom LB exp:ex RB 
+		{:
+			if (debug) System.out.println("se agarra un vector en una posicion");
+			RESULT = new NodoIdentificador(nom, ex);
+		:}
+		;
 
 factor      ::= LPAREN exp:ex RPAREN	
 				{: 
@@ -774,6 +795,11 @@ factor      ::= LPAREN exp:ex RPAREN
 					}
 				
 		
+				:}
+		|array:arr
+				{:
+					if (debug) System.out.println("vector como factor");
+					RESULT = arr;
 				:}
 		| error	
 				{: 

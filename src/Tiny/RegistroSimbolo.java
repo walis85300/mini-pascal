@@ -5,13 +5,15 @@ public class RegistroSimbolo {
 	private String tipo;
 	private int NumLinea;
 	private int DireccionMemoria;
+	private boolean array;
 	
-	public RegistroSimbolo(String identificador, int numLinea, int direccionMemoria, String tipo) {
+	public RegistroSimbolo(String identificador, int numLinea, int direccionMemoria, String tipo, boolean array) {
 		super();
 		this.identificador = identificador;
 		this.tipo = tipo;
 		this.NumLinea = numLinea;
 		this.DireccionMemoria = direccionMemoria;
+		this.array = array;
 	}
 
 	public String getIdentificador() {
