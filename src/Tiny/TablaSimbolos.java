@@ -89,16 +89,13 @@ public class TablaSimbolos {
 	    else if (raiz instanceof NodoBegin){
 	    	cargarTabla(((NodoBegin)raiz).getBody_begin());
 	    }
-	    else if (raiz instanceof NodoCallProcedure){
-	    	InsertarSimbolo(((NodoCallFuncion)raiz).getName_function(),-1,tipoVar, -1);
-	    	cargarTabla(((NodoCallProcedure)raiz).getArgs());
-	    }
+	    
 	    else if (raiz instanceof NodoCallFuncion){
 	    	InsertarSimbolo(((NodoCallFuncion)raiz).getName_function(),-1,tipoVar, -1);
 	    	if(((NodoCallFuncion)raiz).getArgs() != null){
 	    		cargarTabla(((NodoFuncion)raiz).getArgs());
 	    	}
-	    	cargarTabla(((NodoCallProcedure)raiz).getArgs());
+	    	cargarTabla(((NodoCallFuncion)raiz).getArgs());
 	    }
 	    else if (raiz instanceof NodoFor){
 	    	cargarTabla(((NodoFor)raiz).getVariable());
@@ -144,6 +141,12 @@ public class TablaSimbolos {
 	    	if(((NodoFuncion)raiz).getArgs()!=null)
 	    		cargarTabla(((NodoFuncion)raiz).getArgs());
 	    	cargarTabla(((NodoFuncion)raiz).getBody_function());
+	    }
+	    else if (raiz instanceof NodoProcedure){
+	    	InsertarSimbolo(((NodoProcedure)raiz).getName_procedure(),-1,"Procedure", -1);
+	    	if(((NodoProcedure)raiz).getArgs()!=null)
+	    		cargarTabla(((NodoProcedure)raiz).getArgs());
+	    	cargarTabla(((NodoProcedure)raiz).getBody_procedure());
 	    }
 	    else if (raiz instanceof NodoCallFuncion){
 	    	if(((NodoFuncion)raiz).getArgs()!=null)

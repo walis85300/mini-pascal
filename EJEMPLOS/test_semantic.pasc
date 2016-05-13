@@ -4,18 +4,29 @@ Program jsrehrdhfgdfsgsfdfghfghgfh;
 		del compilador de mini pascal
 }
 
-	y: Integer;
+Var
+
+	y,x : Integer;
 	
-function Integer pupu(variCualquiera: Integer)
+procedure hola ();
 	begin
-		
-		salida := bolivares / 300;
-		write(dentroF);
+		for x:=0 to 20 do
+			begin
+				write(0);
+			end;
+	
 	end;	
+	
+procedure d ();
+	begin
+	
+		write(7777);
+	
+	end;		
 	
 
 begin
 
-	pupu(y);
+	hola();
 
 end;

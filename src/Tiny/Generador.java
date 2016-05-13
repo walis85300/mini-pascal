@@ -39,7 +39,7 @@ public class Generador {
 	private static int LineaMain;
 	private static boolean GenerarCuerpoMain = true;
 	private static ArrayList<Integer> localidad_return = new ArrayList<Integer>();
-	private static String ultimoAmbito;
+	private static String nombreProcFunc;
 	
 	public static void setTablaSimbolos(TablaSimbolos tabla){
 		tablaSimbolos = tabla;
@@ -109,9 +109,9 @@ public class Generador {
 			generarOperacion(nodo);
 		}else if (nodo instanceof NodoFuncion){
 			generarFuncion(nodo);
-		}else if (nodo instanceof NodoCallFuncion){
+		}/*else if (nodo instanceof NodoCallFuncion){
 			generarCallFuncion(nodo);	
-		}else{
+		}*/else{
 			System.out.println("BUG: Tipo de nodo a generar desconocido");
 		}
 		/*Si el hijo de extrema izquierda tiene hermano a la derecha lo genero tambien*/
@@ -139,17 +139,17 @@ public class Generador {
 		}
 	}
 	private static void generarProcedure(NodoBase nodo){
-		/*
-		 ultimoAmbito=((NodoFuncion)nodo).getNombre();
+		
+		 nombreProcFunc=((NodoProcedure)nodo).getName_procedure();
 		 int pos=UtGen.emitirSalto(0);
-		 tablaSimbolos.setiMem(ultimoAmbito,pos );
-		 */
+		 tablaSimbolos.setLineaProcFunc(nombreProcFunc, pos);
+		 
 		NodoProcedure n = (NodoProcedure)nodo;
 		if(UtGen.debug)	UtGen.emitirComentario("-> Procedure");
 		if(n.getBody_procedure()!= null)
 			generar(n.getBody_procedure());
 		//Salto incondicional a donde quede
-		//UtGen.emitirRM("LDA", UtGen.PC, 0,UtGen.NL, "Salto incodicional a donde fue llamada la funcion");
+		UtGen.emitirRM("LDA", UtGen.PC, 0,UtGen.NL, "Salto incodicional a donde fue llamada la funcion");
 	}
 	private static void generarFuncion(NodoBase nodo){
 		/*
@@ -166,11 +166,11 @@ public class Generador {
 		//UtGen.emitirRM("LDA", UtGen.PC, 0,UtGen.NL, "Salto incodicional a donde fue llamada la funcion");
 	}
 	private static void generarCallFuncion(NodoBase nodo){
-		/*
-		 ultimoAmbito=((NodoFuncion)nodo).getNombre();
+		if(UtGen.debug)	UtGen.emitirComentario("-> CALLLLL");
+		 nombreProcFunc=((NodoFuncion)nodo).getName_function();
 		 int pos=UtGen.emitirSalto(0);
-		 tablaSimbolos.setiMem(ultimoAmbito,pos );
-		 */
+		 tablaSimbolos.setLineaProcFunc(nombreProcFunc, pos);
+		 
 		tablaSimbolos.ImprimirClaves();
 		NodoCallFuncion n = (NodoCallFuncion)nodo;
 		if(UtGen.debug)	UtGen.emitirComentario("-> llamando Funcion");
@@ -178,7 +178,7 @@ public class Generador {
 			generar(n.getArgs());
 		UtGen.debug = false;
 		//Salto incondicional a donde quede
-		//UtGen.emitirRM("LDA", UtGen.PC, 0,UtGen.NL, "Salto incodicional a donde fue llamada la funcion");
+		UtGen.emitirRM("LDA", UtGen.PC, 0,UtGen.NL, "Salto incodicional a donde fue llamada la funcion");
 	}
 	private static void generarLlamado(NodoBase nodo){
 		//cargar las variables
@@ -193,12 +193,13 @@ public class Generador {
 				aux=aux.getHermanoDerecha();
 			}while(aux!=null);
 		}	
-		//Poner en NL la linea actual + 1
+		//Poner en NL la linea actual + 1*/
+		if(UtGen.debug)	UtGen.emitirComentario("-> CALLLLL");
 		UtGen.emitirRM("LDA", UtGen.NL, 1, UtGen.PC, "(AC=Pos actual + 1)");
 		
 		//saltar a la linea donde empieza la funcion
-		int pos = tablaSimbolos.getiMem(((n.getNombre())));
-		UtGen.emitirRM("LDA", UtGen.PC, pos,UtGen.GP, "Salto a la primera linea de la funcion");*/
+		int pos = tablaSimbolos.getLineaProcFunc(((NodoCallFuncion)n).getName_function());
+		UtGen.emitirRM("LDA", UtGen.PC, pos,UtGen.GP, "Salto a la primera linea de la funcion");
 	}
 	private static void generarReturn(NodoBase nodo){
 		if(((NodoReturn)nodo).getExp()!=null)
