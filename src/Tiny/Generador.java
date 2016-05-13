@@ -74,6 +74,8 @@ public class Generador {
 			generarCuerpo(nodo);
 		}else if (nodo instanceof  NodoBegin){
 			generarBegin(nodo);
+		}else if (nodo instanceof  NodoFor){
+			generarFor(nodo);
 		}else if (nodo instanceof  NodoVar){
 		}else if (nodo instanceof  NodoIf){
 			generarIf(nodo);

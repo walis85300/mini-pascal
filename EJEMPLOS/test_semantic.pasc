@@ -5,15 +5,17 @@ Program jsrehrdhfgdfsgsfdfghfghgfh;
 }
 
 Var
-	y: Integer;
-	b: Boolean;
-	y: Integer;
+	iu: Integer;
+	u: Array [1..3] of Integer;
+	yuiyu: Integer;
+	
 
 begin
+	for iu:= 15 to 20 do
+	begin
 	
-	if (y) then
-		read(holis);
-	end; 
-	write(y);
+		write(0);
+	
+	end;
 
 end;
