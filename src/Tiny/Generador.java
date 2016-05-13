@@ -2,6 +2,8 @@ package Tiny;
 
 import ast.*;
 
+import java.util.*;
+
 public class Generador {
 	/* Ilustracion de la disposicion de la memoria en
 	 * este ambiente de ejecucion para el lenguaje Tiny
@@ -36,6 +38,8 @@ public class Generador {
 	private static TablaSimbolos tablaSimbolos = null;
 	private static int LineaMain;
 	private static boolean GenerarCuerpoMain = true;
+	private static ArrayList<Integer> localidad_return = new ArrayList<Integer>();
+	private static String ultimoAmbito;
 	
 	public static void setTablaSimbolos(TablaSimbolos tabla){
 		tablaSimbolos = tabla;
@@ -68,8 +72,8 @@ public class Generador {
 				//generar(((NodoMain)nodo).getVars());
 			//if(((NodoMain)nodo).getFunctions() != null)
 				//generar(((NodoMain)nodo).getFunctions());
-			//if(((NodoMain)nodo).getProcedure() != null)
-				//generar(((NodoMain)nodo).getProcedure());
+			if(((NodoMain)nodo).getProcedure() != null)
+				generar(((NodoMain)nodo).getProcedure());
 			
 			generarCuerpo(nodo);
 		}else if (nodo instanceof  NodoBegin){
@@ -77,6 +81,12 @@ public class Generador {
 		}else if (nodo instanceof  NodoFor){
 			generarFor(nodo);
 		}else if (nodo instanceof  NodoVar){
+		}else if (nodo instanceof NodoProcedure){
+			generarProcedure(nodo);
+		}else if(nodo instanceof NodoCallFuncion){
+			generarLlamado(nodo);
+		}else if (nodo instanceof NodoReturn){
+			generarReturn(nodo);
 		}else if (nodo instanceof  NodoIf){
 			generarIf(nodo);
 		}else if (nodo instanceof  NodoRepeat){
@@ -123,6 +133,47 @@ public class Generador {
 		} else {
 			generar(((NodoBegin)nodo).getBody_begin());
 		}
+	}
+	private static void generarProcedure(NodoBase nodo){
+		/*
+		 ultimoAmbito=((NodoFuncion)nodo).getNombre();
+		 int pos=UtGen.emitirSalto(0);
+		 tablaSimbolos.setiMem(ultimoAmbito,pos );
+		 */
+		NodoProcedure n = (NodoProcedure)nodo;
+		if(UtGen.debug)	UtGen.emitirComentario("-> Procedure");
+		if(n.getBody_procedure()!= null)
+			generar(n.getBody_procedure());
+		//Salto incondicional a donde quede
+		//UtGen.emitirRM("LDA", UtGen.PC, 0,UtGen.NL, "Salto incodicional a donde fue llamada la funcion");
+	}
+	private static void generarLlamado(NodoBase nodo){
+		//cargar las variables
+		NodoCallFuncion n = (NodoCallFuncion)nodo;
+		/*if (n.getArgs()!=null){	
+			NodoBase aux = n.getArgs();
+			int pos = tablaSimbolos.getPrimerArgumento(((NodoCallFuncion)nodo).getNombre());
+			do{			
+				generar(aux,false); //deja es AC el valor 
+				UtGen.emitirRM("ST", UtGen.AC, pos, UtGen.GP, "llamado: guarda el valor del argumento");	
+				pos+=1;
+				aux=aux.getHermanoDerecha();
+			}while(aux!=null);
+		}	
+		//Poner en NL la linea actual + 1
+		UtGen.emitirRM("LDA", UtGen.NL, 1, UtGen.PC, "(AC=Pos actual + 1)");
+		
+		//saltar a la linea donde empieza la funcion
+		int pos = tablaSimbolos.getiMem(((n.getNombre())));
+		UtGen.emitirRM("LDA", UtGen.PC, pos,UtGen.GP, "Salto a la primera linea de la funcion");*/
+	}
+	private static void generarReturn(NodoBase nodo){
+		if(((NodoReturn)nodo).getExp()!=null)
+		       generar(((NodoReturn)nodo).getExp());
+		//la setencia anterior deja en AC el valor retornado		
+		//Guargo una posicion para saltar a la linea donde termina la funcion
+		localidad_return.add(UtGen.emitirSalto(1));
+
 	}
 	private static void generarIf(NodoBase nodo){
     	NodoIf n = (NodoIf)nodo;
