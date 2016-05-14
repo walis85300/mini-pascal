@@ -250,12 +250,12 @@ public class Generador {
 		/*Genero la parte ELSE*/
 		if(n.getParteElse()!=null){
 			generar(n.getParteElse(), true);
-			localidadActual = UtGen.emitirSalto(0);
-			UtGen.cargarRespaldo(localidadSaltoEnd);
-			UtGen.emitirRM_Abs("LDA", UtGen.PC, localidadActual, "if: jmp hacia el final");
-			UtGen.restaurarRespaldo();
+
     	}
-		
+		localidadActual = UtGen.emitirSalto(0);
+		UtGen.cargarRespaldo(localidadSaltoEnd);
+		UtGen.emitirRM_Abs("LDA", UtGen.PC, localidadActual, "if: jmp hacia el final");
+		UtGen.restaurarRespaldo();			
 		if(UtGen.debug)	UtGen.emitirComentario("<- if");
 	}
 	
@@ -309,26 +309,26 @@ public class Generador {
 	}		
 
 	private static void generarFor(NodoBase nodo){ 
-    	NodoFor n = (NodoFor)nodo;
+		NodoFor n = (NodoFor)nodo;
     	int localidadSaltoInicio,localidadFinal,localidadActual;
     	/* Genero el codigo de la prueba del while */
 		if(UtGen.debug)	UtGen.emitirComentario("-> while");
-		generar(n.getVariable(), true);
+		generar(n.getVariable(),true);
 		localidadSaltoInicio = UtGen.emitirSalto(0);
-		
-			generar(n.getCuerpo(), true);
-			UtGen.emitirComentario("while: aqui deberia ir el marcado del inicio del while");
-			UtGen.emitirRM("LDC", UtGen.AC, 1, 0, "cargar constante: 1");
-			UtGen.emitirRM("LD", UtGen.AC1, ++desplazamientoTmp, UtGen.GP, "op: pop o cargo de la pila el valor izquierdo en AC1");
-			UtGen.emitirRO("ADD", UtGen.AC1, UtGen.AC1, UtGen.AC, "op: +");	
-			UtGen.emitirRM("ST", UtGen.AC1, 1, UtGen.GP, "leer: almaceno el valor entero leido en el id ");
-			generar(n.getValorFinal(), true);
+			generar(n.getValorFinal(),true);
+			
 			UtGen.emitirRO("SUB", UtGen.AC, UtGen.AC1, UtGen.AC, "op: ==");
 			UtGen.emitirRM("JEQ", UtGen.AC, 2, UtGen.PC, "voy dos instrucciones mas alla if verdadero (AC==0)");
 			UtGen.emitirRM("LDC", UtGen.AC, 1, UtGen.AC, "caso de falso (AC=0)");
 			UtGen.emitirRM("LDA", UtGen.PC, 1, UtGen.PC, "Salto incodicional a direccion: PC+1 (es falso evito colocarlo verdadero)");
 			UtGen.emitirRM("LDC", UtGen.AC, 0, UtGen.AC, "caso de verdadero (AC=1)");
 		localidadFinal = UtGen.emitirSalto(1);
+			generar(n.getCuerpo(),true);
+			UtGen.emitirComentario("f: aqui deberia ir el marcado del inicio del for");
+			UtGen.emitirRM("LDC", UtGen.AC, 1, 0, "cargar constante: 1");
+			UtGen.emitirRM("LD", UtGen.AC1, ++desplazamientoTmp, UtGen.GP, "op: pop o cargo de la pila el valor izquierdo en AC1");
+			UtGen.emitirRO("ADD", UtGen.AC1, UtGen.AC1, UtGen.AC, "op: +");	
+			UtGen.emitirRM("ST", UtGen.AC1, 1, UtGen.GP, "leer: almaceno el valor entero leido en el id ");
 		//if(UtGen.debug)	UtGen.emitirComentario("-> cuerpo for");
 		/* Genero el cuerpo del for */
 		
@@ -343,23 +343,55 @@ public class Generador {
 	
 	private static void generarAsignacion(NodoBase nodo){
 		NodoAsignacion n = (NodoAsignacion)nodo;
-		int direccion;
+		int direccion, tamano;
 		if(UtGen.debug)	UtGen.emitirComentario("-> asignacion");		
-		/* Genero el codigo para la expresion a la derecha de la asignacion */
-		generar(n.getExpresion(), true);
-		/* Ahora almaceno el valor resultante */
-		direccion = tablaSimbolos.getDireccion(n.getIdentificador());
-		UtGen.emitirRM("ST", UtGen.AC, direccion, UtGen.GP, "asignacion: almaceno el valor para el id "+n.getIdentificador());
-		if(UtGen.debug)	UtGen.emitirComentario("<- asignacion");
+		
+		if(n.getPosArray() == null){
+			/* Genero el codigo para la expresion a la derecha de la asignacion */
+			generar(n.getExpresion(),true);
+			/* Ahora almaceno el valor resultante */
+			direccion = tablaSimbolos.getDireccion(n.getIdentificador());
+			
+			UtGen.emitirRM("ST", UtGen.AC, direccion, UtGen.GP, "asignacion: almaceno el valor para el id "+n.getIdentificador());
+			if(UtGen.debug)	UtGen.emitirComentario("<- asignacion");
+		}else{
+			/* Genero el codigo para la expresion a la derecha de la asignacion */
+			generar(n.getPosArray(),true);
+			direccion = tablaSimbolos.getDireccion(n.getIdentificador());
+			tamano = tablaSimbolos.getTamano(n.getIdentificador());
+			UtGen.emitirRM("LDC", UtGen.AC1, direccion, 0, "cargar constante: ");
+			UtGen.emitirRO("ADD", UtGen.AC, UtGen.AC1, UtGen.AC, "op: +");	
+			/*0UtGen.emitirRM("LDC", UtGen.AC1, 1, 0, "cargar constante: 1");
+			UtGen.emitirRO("SUB", UtGen.AC1, UtGen.AC, UtGen.AC1, "op: ==");*/
+			
+			UtGen.emitirRM("ST", UtGen.AC, desplazamientoTmp++, UtGen.MP, "asignacion: almaceno el valor para el id ");
+			generar(n.getExpresion(),true);
+			
+			UtGen.emitirRM("LD", UtGen.AC1, --desplazamientoTmp, UtGen.MP, "cargar valor de desplazamiento ");
+			UtGen.emitirRM("ST", UtGen.AC, 0, UtGen.AC1, "asignacion: almaceno el valor para el id "+n.getIdentificador());
+			//direccion = tablaSimbolos.getDireccion(n.getIdentificador());
+			//UtGen.emitirRM("ST", UtGen.AC, direccion, UtGen.GP, "asignacion: almaceno el valor para el id "+n.getIdentificador());
+			if(UtGen.debug)	UtGen.emitirComentario("<- asignacion");
+		}
 	}
 	
 	private static void generarLeer(NodoBase nodo){
 		NodoLeer n = (NodoLeer)nodo;
-		int direccion;
+		int direccion, tamano;
 		if(UtGen.debug)	UtGen.emitirComentario("-> leer");
 		UtGen.emitirRO("IN", UtGen.AC, 0, 0, "leer: lee un valor entero ");
 		direccion = tablaSimbolos.getDireccion(n.getIdentificador());
-		UtGen.emitirRM("ST", UtGen.AC, direccion, UtGen.GP, "leer: almaceno el valor entero leido en el id "+n.getIdentificador());
+		tamano = tablaSimbolos.getTamano(n.getIdentificador());
+		
+		if(n.getPosArray()!=null ){
+			generar(n.getPosArray(), true);
+			UtGen.emitirRO("ADD",UtGen.GP,UtGen.GP,UtGen.AC,"sumo desplazamiento al registro GP");
+			UtGen.emitirRO("IN", UtGen.AC, 0, 0, "leer: lee un valor entero ");
+			direccion = direccion + tamano;
+			UtGen.emitirRM("ST", UtGen.AC, direccion, UtGen.GP, "leer: almaceno el valor entero leido en el id "+n.getIdentificador());
+			UtGen.emitirRM("LDC",UtGen.GP,0,0,"cargo constante 0 en registro GP");
+		}else
+			UtGen.emitirRM("ST", UtGen.AC, direccion, UtGen.GP, "leer: almaceno el valor entero leido en el id "+n.getIdentificador());
 		if(UtGen.debug)	UtGen.emitirComentario("<- leer");
 	}
 	
@@ -382,9 +414,16 @@ public class Generador {
 	
 	private static void generarIdentificador(NodoBase nodo){
 		NodoIdentificador n = (NodoIdentificador)nodo;
-		int direccion;
+		int direccion, tamano;
 		if(UtGen.debug)	UtGen.emitirComentario("-> identificador");
 		direccion = tablaSimbolos.getDireccion(n.getNombre());
+		if(n.getExpresion()!=null){
+			generar(n.getExpresion(),true);
+			UtGen.emitirRO("ADD",UtGen.GP,UtGen.AC1,UtGen.AC,"sumo despazamiendo al registro GP");
+			UtGen.emitirRM("LD", UtGen.AC, direccion,UtGen.GP, "cargar valor de identificador: "+n.getNombre());
+			UtGen.emitirRM("LDC",UtGen.GP,0,0,"cargo constante 0 en el resgitro GP");
+		}
+		else
 		UtGen.emitirRM("LD", UtGen.AC, direccion, UtGen.GP, "cargar valor de identificador: "+n.getNombre());
 		if(UtGen.debug)	UtGen.emitirComentario("-> identificador");
 	}

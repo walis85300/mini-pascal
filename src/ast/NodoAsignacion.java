@@ -35,6 +35,10 @@ public class NodoAsignacion extends NodoBase {
 	public NodoBase getExpresion() {
 		return expresion;
 	}
+	
+	public NodoBase getPosArray() {
+		return posArray;
+	}
 
 	public void setExpresion(NodoBase expresion) {
 		this.expresion = expresion;

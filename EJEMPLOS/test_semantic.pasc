@@ -1,27 +1,28 @@
 Program dolar;
-{
-	Programa de prueba 
-		del compilador de mini pascal
-}
-
 Var
 
-	x,y,z,k: Integer;
+	x,y,k,z,w: Integer;
+	a: Array[1..5] of Integer;
+	n: Integer;
 
-function Integer suma(x,y: Integer)
+function Integer suma(t,i: Integer)
 	begin
 	
-		return x + y;
+		return t + i;
 	
 	end;
 	
-procedure multiplicacion(z,k: Integer);
+procedure sumaAx(x: Integer);
 	begin
-	
-		write(z*k);
-	
+		x:= x + 1;
 	end;
-	
+
 begin
-	multiplicacion(suma(2,3),4);
+	x:= 0;
+	while x < 5 do
+		begin
+			write(suma(x,4));
+			sumaAx();
+		end;
+	write(784);
 end;

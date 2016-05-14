@@ -182,7 +182,7 @@ public class TablaSimbolos {
 			if (tamano != -1) 
 				array = true;
 			
-			simbolo= new RegistroSimbolo(identificador,numLinea,direccion++,tipo, array);
+			simbolo= new RegistroSimbolo(identificador,numLinea,direccion++,tipo, array, tamano);
 			tabla.put(identificador,simbolo);					
 			
 			/*
@@ -224,6 +224,11 @@ public class TablaSimbolos {
 	public int getDireccion(String Clave){
 		return BuscarSimbolo(Clave).getDireccionMemoria();
 	}
+	
+	public int getTamano(String Clave){
+		return BuscarSimbolo(Clave).getTamano();
+	}
+	
 	public boolean getError(){
 		return error;
 	}

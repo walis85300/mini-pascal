@@ -21,6 +21,10 @@ public class NodoLeer extends NodoBase {
 		super();
 		id="";
 	}
+	
+	public NodoBase getPosArray() {
+		return this.posArray;
+	}
 
 	public String getIdentificador() {
 		return id;

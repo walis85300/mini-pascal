@@ -6,14 +6,16 @@ public class RegistroSimbolo {
 	private int NumLinea;
 	private int DireccionMemoria;
 	private boolean array;
+	private int tamano;
 	
-	public RegistroSimbolo(String identificador, int numLinea, int direccionMemoria, String tipo, boolean array) {
+	public RegistroSimbolo(String identificador, int numLinea, int direccionMemoria, String tipo, boolean array, int tamano) {
 		super();
 		this.identificador = identificador;
 		this.tipo = tipo;
 		this.NumLinea = numLinea;
 		this.DireccionMemoria = direccionMemoria;
 		this.array = array;
+		this.tamano = tamano;
 	}
 
 	public String getIdentificador() {
@@ -26,6 +28,10 @@ public class RegistroSimbolo {
 	
 	public String getTipo(){
 		return tipo;
+	}
+	
+	public int getTamano() {
+		return tamano;
 	}
 
 	public int getDireccionMemoria() {
