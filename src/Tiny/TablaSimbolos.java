@@ -42,13 +42,16 @@ public class TablaSimbolos {
 	
 	/*
 	 * Me va a almacenar los argumentos que recibe un proc o func
+	 * 
 	 * */
+	public ArrayList<String> listaArgumentos;
 	private HashMap <String, ArrayList<String>> tablaDeArgumentos;
 	
 	public TablaSimbolos() {
 		super();
 		tabla = new HashMap <String, RegistroSimbolo>();
 		tablaProcFunc = new HashMap <String, Integer>();
+		tablaDeArgumentos = new HashMap <String, ArrayList<String>>();
 		direccion=0;
 	}
 
@@ -93,7 +96,7 @@ public class TablaSimbolos {
 	    else if (raiz instanceof NodoCallFuncion){
 	    	InsertarSimbolo(((NodoCallFuncion)raiz).getName_function(),-1,tipoVar, -1);
 	    	if(((NodoCallFuncion)raiz).getArgs() != null){
-	    		cargarTabla(((NodoFuncion)raiz).getArgs());
+	    			cargarTabla(((NodoCallFuncion)raiz).getArgs());
 	    	}
 	    	cargarTabla(((NodoCallFuncion)raiz).getArgs());
 	    }
@@ -137,15 +140,25 @@ public class TablaSimbolos {
 	    				((NodoVar)raiz).getTamano());
 	    }
 	    else if (raiz instanceof NodoFuncion){
-	    	InsertarSimbolo(((NodoFuncion)raiz).getName_function(),-1,((NodoFuncion)raiz).getType_function(), -1);
-	    	if(((NodoFuncion)raiz).getArgs()!=null)
+	    	String nombreFuncion = ((NodoFuncion)raiz).getName_function();
+	    	InsertarSimbolo(nombreFuncion,-1,((NodoFuncion)raiz).getType_function(), -1);
+	    	if(((NodoFuncion)raiz).getArgs()!=null){
 	    		cargarTabla(((NodoFuncion)raiz).getArgs());
+	    		listaArgumentos = new ArrayList<String>();
+	    		cargarArgumentos(((NodoFuncion)raiz).getArgs());
+	    		tablaDeArgumentos.put(nombreFuncion, listaArgumentos);
+	    	}
 	    	cargarTabla(((NodoFuncion)raiz).getBody_function());
 	    }
 	    else if (raiz instanceof NodoProcedure){
-	    	InsertarSimbolo(((NodoProcedure)raiz).getName_procedure(),-1,"Procedure", -1);
-	    	if(((NodoProcedure)raiz).getArgs()!=null)
+	    	String nombreProcedure = ((NodoProcedure)raiz).getName_procedure();
+	    	InsertarSimbolo(nombreProcedure,-1,"Procedure", -1);
+	    	if(((NodoProcedure)raiz).getArgs()!=null){
 	    		cargarTabla(((NodoProcedure)raiz).getArgs());
+	    		listaArgumentos = new ArrayList<String>();
+	    		cargarArgumentos((((NodoProcedure)raiz).getArgs()));
+	    		tablaDeArgumentos.put(nombreProcedure, listaArgumentos);
+	    	}
 	    	cargarTabla(((NodoProcedure)raiz).getBody_procedure());
 	    }
 	    else if (raiz instanceof NodoCallFuncion){
@@ -213,6 +226,16 @@ public class TablaSimbolos {
 	}
 	public boolean getError(){
 		return error;
+	}
+	
+	public void cargarArgumentos(NodoBase nodo) {
+		String nombre = ((NodoVar)nodo).getName_var();
+		listaArgumentos.add(nombre);
+		
+			if(((NodoVar)nodo).TieneHermano()){
+				cargarArgumentos((((NodoVar)nodo).getHermanoDerecha()));
+			}
+		
 	}
 	
 	public void setArgumentos(String nomProcFunc, ArrayList<String> args) {

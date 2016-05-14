@@ -1,5 +1,7 @@
 package Tiny;
 
+import java.io.*;
+
 /* La idea principal de esta clase (Utilidades de Generacion)es ayudar a emitir las 
  * sentencias en el asembler de la Tiny Machine (TM), haciendo mas sencilla la 
  * implementacion de un generador de codigo objeto para la misma.
@@ -35,6 +37,9 @@ public class UtGen {
 	
 	public static int NL = 4;
 	
+	public static FileWriter fichero=null;
+	
+	public static PrintWriter pw=null;
 	
 	public static void emitirComentario(String c){
 		if(debug) System.out.println("*      "+c);
@@ -77,6 +82,7 @@ public class UtGen {
 		if(instruccionMasAlta < instruccionActual) 
 			instruccionMasAlta = instruccionActual;	
 	}
+	
 	
 	/* La funcion emitirSalto, salta "cantidad" de localidades de codigo
 	 * para el reajuste posterior. Tambien devuelve la posicion actual
@@ -123,6 +129,30 @@ public class UtGen {
 		System.out.print("\n");
 		if(instruccionMasAlta < instruccionActual) 
 			instruccionMasAlta = instruccionActual;	
+	}
+	
+	public static void abrir_archivo(){
+		try {
+			fichero=new FileWriter("sfsdfsdfsdfsd.tm");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static void cerrar_archivo(){
+		try {
+			fichero.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			fichero.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 /*TODO: Cambiar emision por pantalla por stream*/	

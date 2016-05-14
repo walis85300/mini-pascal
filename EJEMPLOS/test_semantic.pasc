@@ -1,4 +1,4 @@
-Program jsrehrdhfgdfsgsfdfghfghgfh;
+Program dolar;
 {
 	Programa de prueba 
 		del compilador de mini pascal
@@ -6,27 +6,22 @@ Program jsrehrdhfgdfsgsfdfghfghgfh;
 
 Var
 
-	y,x : Integer;
-	
-procedure hola ();
-	begin
-		for x:=0 to 20 do
-			begin
-				write(0);
-			end;
-	
-	end;	
-	
-procedure d ();
-	begin
-	
-		write(7777);
-	
-	end;		
-	
+	x,y,z,k: Integer;
 
+function Integer suma(x,y: Integer)
+	begin
+	
+		return x + y;
+	
+	end;
+	
+procedure multiplicacion(z,k: Integer);
+	begin
+	
+		write(z*k);
+	
+	end;
+	
 begin
-
-	hola();
-
+	multiplicacion(suma(2,3),4);
 end;
